@@ -1,6 +1,4 @@
-﻿(* hej hej *)
-
-namespace Parser
+﻿namespace Parser
 
 type Class1() = 
     member this.X = "F#"
