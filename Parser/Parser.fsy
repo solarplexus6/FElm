@@ -14,7 +14,7 @@
 %token THEN
 %token ELSE
 %token LET
-%token BE
+%token EQUAL
 %token IN
 %token LIFT1
 %token LIFT2
@@ -62,7 +62,7 @@ expr:
 | expr GE expr { Op ($1, Ge, $3) }
 | expr GT expr { Op ($1, Gt, $3) }
 | IF expr THEN expr ELSE expr { If ($2, $4, $6) }
-| LET ID BE expr IN expr { Let ($2, $4, $6) }
+| LET ID EQUAL expr IN expr { Let ($2, $4, $6) }
 // input
 | LIFT1 expr expr { Lift ($2, [$3]) }
 | LIFT2 expr expr expr { Lift ($2, [$3; $4]) }

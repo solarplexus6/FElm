@@ -23,7 +23,7 @@ let tokenizeIdent = function
 let tokenizeSpecial = function
   | "\\" -> FUN
   | "->" -> ARROW
-  | "="  -> BE  
+  | "="  -> EQUAL  
   | "+"  -> ADD
   | "-"  -> SUB
   | "*"  -> MUL
