@@ -9,13 +9,10 @@ let lexeme = LexBuffer<_>.LexemeString
 
 let tokenizeIdent = function
   | "unit"  -> UNIT
-  | "\\"    -> FUN
-  | "->"    -> ARROW
   | "if"    -> IF
   | "then"  -> THEN
   | "else"  -> ELSE
   | "let"   -> LET
-  | "="     -> BE
   | "in"    -> IN
   | "lift"  -> LIFT1
   | "lift2" -> LIFT2
@@ -24,6 +21,9 @@ let tokenizeIdent = function
   | id      -> ID id
 
 let tokenizeSpecial = function
+  | "\\" -> FUN
+  | "->" -> ARROW
+  | "="  -> BE  
   | "+"  -> ADD
   | "-"  -> SUB
   | "*"  -> MUL
@@ -44,7 +44,7 @@ let int        = '-'?digit+
 let identifier = char(char|digit|['-' '_' '.'])*
 let whitespace = ' ' | '\t'   
 let newline    = "\n\r" | '\n'
-let special    = "+" | "-" | "*" | "/" | "<" | "<=" | "==" | ">=" | ">" | "(" | ")"
+let special    = "\\" | "->" | "=" | "+" | "-" | "*" | "/" | "<" | "<=" | "==" | ">=" | ">" | "(" | ")"
 
 rule tokenize = parse
 | int                  { NUM (Convert.ToInt32(lexeme lexbuf)) }
