@@ -7,13 +7,18 @@ type binop = Add
            | Sub
            | Mul
            | Div
+           | Le
+           | Leq
+           | Eq
+           | Geq
+           | Gr
 
 type expr = Unit
           | Num of num
           | Var of varname
           | Fun of varname * expr
           | App of expr * expr
-          | BinOp of expr * binop * expr
+          | Op of expr * binop * expr
           | If of expr * expr * expr
           | Let of varname * expr * expr
           | Input of int
