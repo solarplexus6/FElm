@@ -1,0 +1,55 @@
+{
+module Lexer
+
+open System
+open Microsoft.FSharp.Text.Lexing
+open Parser
+
+let lexeme = LexBuffer<_>.LexemeString
+
+let tokenizeIdent = function
+  | "unit"  -> UNIT
+  | "\\"    -> FUN
+  | "->"    -> ARROW
+  | "if"    -> IF
+  | "then"  -> THEN
+  | "else"  -> ELSE
+  | "let"   -> LET
+  | "="     -> BE
+  | "in"    -> IN
+  | "lift"  -> LIFT1
+  | "lift2" -> LIFT2
+  | "lift3" -> LIFT3
+  | "foldp" -> FOLDP
+  | id      -> ID id
+
+let tokenizeSpecial = function
+  | "+"  -> ADD
+  | "-"  -> SUB
+  | "*"  -> MUL
+  | "/"  -> DIV
+  | "<"  -> LT
+  | "<=" -> LE
+  | "==" -> EQ
+  | ">=" -> GE
+  | ">"  -> GT
+  | "("  -> LPAREN
+  | ")"  -> RPAREN
+  | _    -> failwith "Something went terribly wrong."
+}
+ 
+let char       = ['a'-'z' 'A'-'Z']   
+let digit      = ['0'-'9']      
+let int        = '-'?digit+
+let identifier = char(char|digit|['-' '_' '.'])*
+let whitespace = ' ' | '\t'   
+let newline    = "\n\r" | '\n'
+let special    = "+" | "-" | "*" | "/" | "<" | "<=" | "==" | ">=" | ">" | "(" | ")"
+
+rule tokenize = parse
+| int                  { NUM (Convert.ToInt32(lexeme lexbuf)) }
+| identifier           { tokenizeIdent (lexeme lexbuf) }
+| special              { tokenizeSpecial (lexeme lexbuf) }
+| whitespace | newline { tokenize lexbuf }
+| eof                  { EOF }
+| _                    { failwith (lexeme lexbuf) }
