@@ -7,11 +7,11 @@ type binop = Add
            | Sub
            | Mul
            | Div
+           | Lt
            | Le
-           | Leq
            | Eq
-           | Geq
-           | Gr
+           | Ge
+           | Gt
 
 type expr = Unit
           | Num of num
