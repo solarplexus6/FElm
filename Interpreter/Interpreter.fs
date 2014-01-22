@@ -92,7 +92,7 @@ let rec reduce e =
       Let (x', l1, f l2')
     | None -> reduce' e
 and reduce' = function
-  | App (Fun (x, e1), e2) -> Let (x, e1, e2)                  // APPLICATION
+  | App (Fun (x, e1), e2) -> Let (x, e2, e1)                  // APPLICATION
   | App (e1, e2) ->
     let r = reduce e1
     in App (r, e2)
