@@ -39,20 +39,22 @@ let rec subst x e =
       | Var y when y <> x -> expr
       | Fun (y, _) when y = x -> expr
       | Fun (y, body) when y <> x ->
-        let freshVar = Gensym.next()
-        let body' = subst y (Var freshVar) body
+        let (y', body') = alphaConvert (y, body)
         let body'' = subst' body'
-        in Fun (freshVar, body'')
+        in Fun (y', body'')
       | App (e1, e2) -> App (subst' e1, subst' e2)
       | Op (e1, op, e2) -> Op (subst' e1, op, subst' e2)
       | If (e1, e2, e3) -> If (subst' e1, subst' e2, subst' e3)
       | Let (y, e1, e2) when y = x -> Let (y, subst' e1, e2)
       | Let (y, e1, e2) when y <> x ->
-        let freshVar = Gensym.next()
-        let e2' = subst y (Var freshVar) e2
+        let (y', e2') = alphaConvert (y, e2)
         let e2'' = subst' e2'
-        in Let (freshVar, subst' e1, e2'')
+        in Let (y', subst' e1, e2'')
       | Lift (e1, elist) -> Lift (subst' e1, List.map subst' elist)
       | Foldp (e1, e2, e3) -> Foldp (subst' e1, subst' e2, subst' e3)
       | _ -> expr
   in subst'
+and alphaConvert (x, e) =
+  let x' = Gensym.next()
+  let e' = subst x (Var x') e
+  in (x', e')  
