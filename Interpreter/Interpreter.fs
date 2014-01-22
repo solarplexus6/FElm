@@ -86,58 +86,58 @@ let rec tryExpand = function
   | _ -> None
 
 let rec reduce e =
-  let reduce' = function
-    | App (Fun (x, e1), e2) -> Let (x, e1, e2)                  // APPLICATION
-    | App (e1, e2) ->
-      let r = reduce e1
-      in App (r, e2)
-    | Op (Num n1, op, Num n2) -> Num (binopToFunction op n1 n2) // OP
-    | Op (Num n1, op, e2) ->
-      let r = reduce e2
-      in Op (Num n1, op, r)
-    | Op (e1, op, e2) ->
-      let r = reduce e1
-      in Op (r, op, e2)
-    | If (Num 0, e2, e3) -> e3                                  // COND-FALSE
-    | If (Num _, e2, e3) -> e2                                  // COND-TRUE
-    | If (e1, e2, e3) ->                
-      let r = reduce e1
-      in If (r, e2, e3)
-    | Let (x, e1, e2) when isValue e1 -> subst x e1 e2          // REDUCE
-    | Let (x, e1, e2) when isSignalTerm e1 ->
-      let r = reduce e2
-      in Let (x, e1, r)
-    | Let (x, e1, e2) ->
-      let r = reduce e1
-      in Let (x, r, e2)
-    | Lift (e1, elist) when isValue e1 ->
-      let rec splitLift = function
-        | (e :: es) when isSignalTerm e ->
-          let (elist1, ek, elist2) = splitLift es
-          in ((e :: elist1), ek, elist2)
-        | (e :: es) -> ([], e, es)
-        | [] -> failwith "splitLift"
-      let (elist1, ek, elist2) = splitLift elist
-      let r = reduce ek
-      in Lift (e1, elist1 @ [r] @ elist2)
-    | Lift (e1, elist) ->
-      let r = reduce e1
-      in Lift (r, elist)
-    | Foldp (e1, e2, e3) when isValue e1 && isValue e2 ->
-      let r = reduce e3
-      in Foldp (e1, e2, r)
-    | Foldp (e1, e2, e3) when isValue e1 ->
-      let r = reduce e2
-      in Foldp (e1, r, e3)
-    | Foldp (e1, e2, e3) ->
-      let r = reduce e1
-      in Foldp (r, e2, e3)
-    | _ -> failwith "reduce couldn't find a valid redex"
   match tryExpand e with
     | Some (x, l1, l2, f) ->
       let (x', l2') = alphaConvert (x, l2)
       Let (x', l1, f l2')
     | None -> reduce' e
+and reduce' = function
+  | App (Fun (x, e1), e2) -> Let (x, e1, e2)                  // APPLICATION
+  | App (e1, e2) ->
+    let r = reduce e1
+    in App (r, e2)
+  | Op (Num n1, op, Num n2) -> Num (binopToFunction op n1 n2) // OP
+  | Op (Num n1, op, e2) ->
+    let r = reduce e2
+    in Op (Num n1, op, r)
+  | Op (e1, op, e2) ->
+    let r = reduce e1
+    in Op (r, op, e2)
+  | If (Num 0, e2, e3) -> e3                                  // COND-FALSE
+  | If (Num _, e2, e3) -> e2                                  // COND-TRUE
+  | If (e1, e2, e3) ->                
+    let r = reduce e1
+    in If (r, e2, e3)
+  | Let (x, e1, e2) when isValue e1 -> subst x e1 e2          // REDUCE
+  | Let (x, e1, e2) when isSignalTerm e1 ->
+    let r = reduce e2
+    in Let (x, e1, r)
+  | Let (x, e1, e2) ->
+    let r = reduce e1
+    in Let (x, r, e2)
+  | Lift (e1, elist) when isValue e1 ->
+    let rec splitLift = function
+      | (e :: es) when isSignalTerm e ->
+        let (elist1, ek, elist2) = splitLift es
+        in ((e :: elist1), ek, elist2)
+      | (e :: es) -> ([], e, es)
+      | [] -> failwith "splitLift"
+    let (elist1, ek, elist2) = splitLift elist
+    let r = reduce ek
+    in Lift (e1, elist1 @ [r] @ elist2)
+  | Lift (e1, elist) ->
+    let r = reduce e1
+    in Lift (r, elist)
+  | Foldp (e1, e2, e3) when isValue e1 && isValue e2 ->
+    let r = reduce e3
+    in Foldp (e1, e2, r)
+  | Foldp (e1, e2, e3) when isValue e1 ->
+    let r = reduce e2
+    in Foldp (e1, r, e3)
+  | Foldp (e1, e2, e3) ->
+    let r = reduce e1
+    in Foldp (r, e2, e3)
+  | _ -> failwith "reduce couldn't find a valid redex"    
 
 let rec normalize e =
   if isFinalTerm e then e
