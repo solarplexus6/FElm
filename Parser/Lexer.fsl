@@ -31,6 +31,7 @@ let tokenizeSpecial = function
   | "<"  -> LT
   | "<=" -> LE
   | "==" -> EQ
+  | "/=" -> NEQ
   | ">=" -> GE
   | ">"  -> GT
   | "("  -> LPAREN
@@ -44,7 +45,7 @@ let int        = '-'?digit+
 let identifier = char(char|digit|['-' '_' '.'])*
 let whitespace = ' ' | '\t'   
 let newline    = "\n\r" | '\n'
-let special    = "\\" | "->" | "=" | "+" | "-" | "*" | "/" | "<" | "<=" | "==" | ">=" | ">" | "(" | ")"
+let special    = "\\" | "->" | "=" | "+" | "-" | "*" | "/" | "<" | "<=" | "==" | "/=" | ">=" | ">" | "(" | ")"
 
 rule tokenize = parse
 | int                  { NUM (Convert.ToInt32(lexeme lexbuf)) }

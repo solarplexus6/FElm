@@ -10,6 +10,7 @@ type binop = Add
            | Lt
            | Le
            | Eq
+           | Neq
            | Ge
            | Gt
 

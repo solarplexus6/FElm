@@ -28,6 +28,7 @@
 %token LT
 %token LE
 %token EQ
+%token NEQ
 %token GE
 %token GT
 %token LPAREN
@@ -59,6 +60,7 @@ expr:
 | expr LT expr { Op ($1, Lt, $3) }
 | expr LE expr { Op ($1, Le, $3) }
 | expr EQ expr { Op ($1, Eq, $3) }
+| expr NEQ expr { Op ($1, Neq, $3) }
 | expr GE expr { Op ($1, Ge, $3) }
 | expr GT expr { Op ($1, Gt, $3) }
 | IF expr THEN expr ELSE expr { If ($2, $4, $6) }

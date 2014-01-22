@@ -5,6 +5,7 @@ type token =
   | LPAREN
   | GT
   | GE
+  | NEQ
   | EQ
   | LE
   | LT
@@ -17,7 +18,7 @@ type token =
   | LIFT2
   | LIFT1
   | IN
-  | BE
+  | EQUAL
   | LET
   | ELSE
   | THEN
@@ -33,6 +34,7 @@ type tokenId =
     | TOKEN_LPAREN
     | TOKEN_GT
     | TOKEN_GE
+    | TOKEN_NEQ
     | TOKEN_EQ
     | TOKEN_LE
     | TOKEN_LT
@@ -45,7 +47,7 @@ type tokenId =
     | TOKEN_LIFT2
     | TOKEN_LIFT1
     | TOKEN_IN
-    | TOKEN_BE
+    | TOKEN_EQUAL
     | TOKEN_LET
     | TOKEN_ELSE
     | TOKEN_THEN
