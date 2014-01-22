@@ -1,11 +1,12 @@
 module ParserTest
 
-open System   
+open System
+open System.IO
+open Lexer
 open Parser
- 
-let x = "   
-    (\x -> if x then 0 else 6) (2 + 3 * 6)
-"   
- 
-let lexbuf = Lexing.LexBuffer<_>.FromString x
+
+let input =
+  let args = Environment.GetCommandLineArgs()
+  in File.OpenText(args.[1])
+let lexbuf = Lexing.LexBuffer<_>.FromTextReader input
 printfn "%A" (Parser.program Lexer.tokenize lexbuf)

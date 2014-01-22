@@ -1,12 +1,13 @@
 module LexerTest
 
-open System   
+open System
+open System.IO
 open Lexer
- 
-let x = "   
-    if 0 then 5 else 6   
-"   
- 
-let lexbuf = Lexing.LexBuffer<_>.FromString x   
+open Parser
+
+let input =
+  let args = Environment.GetCommandLineArgs()
+  in File.OpenText(args.[1])
+let lexbuf = Lexing.LexBuffer<_>.FromTextReader input
 while not lexbuf.IsPastEndOfStream do  
-    printfn "%A" (Lexer.tokenize lexbuf)   
+    printfn "%A" (Lexer.tokenize lexbuf)
