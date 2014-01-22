@@ -1,0 +1,4 @@
+let x = 3 / 2 in
+let y = x + 7 in
+if x + y > 5 then foldp 1 2 3
+else (\z -> ()) (lift2 1 2 3)
