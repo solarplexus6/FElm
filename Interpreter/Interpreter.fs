@@ -143,6 +143,10 @@ let rec normalize e =
   if isFinalTerm e then e
   else reduce e |> normalize
 
+let rec debug e =
+  if isFinalTerm e then e
+  else printfn "%A" e; reduce e |> debug
+
 // poprzednia (niekompletna) wersja
 // let rec reduce e =
 //   match e with
