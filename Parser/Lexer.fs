@@ -90,37 +90,37 @@ and tokenize  (lexbuf : Microsoft.FSharp.Text.Lexing.LexBuffer<_>) = _fslex_toke
 and _fslex_tokenize  _fslex_state lexbuf =
   match _fslex_tables.Interpret(_fslex_state,lexbuf) with
   | 0 -> ( 
-# 51 "/home/filip/src/FElm/Parser/Lexer.fsl"
+# 52 "/home/filip/src/FElm/Parser/Lexer.fsl"
                                         NUM (Convert.ToInt32(lexeme lexbuf)) 
 # 95 "/home/filip/src/FElm/Parser/Lexer.fs"
           )
   | 1 -> ( 
-# 52 "/home/filip/src/FElm/Parser/Lexer.fsl"
+# 53 "/home/filip/src/FElm/Parser/Lexer.fsl"
                                         tokenizeIdent (lexeme lexbuf) 
 # 100 "/home/filip/src/FElm/Parser/Lexer.fs"
           )
   | 2 -> ( 
-# 53 "/home/filip/src/FElm/Parser/Lexer.fsl"
+# 54 "/home/filip/src/FElm/Parser/Lexer.fsl"
                                         tokenizeSpecial (lexeme lexbuf) 
 # 105 "/home/filip/src/FElm/Parser/Lexer.fs"
           )
   | 3 -> ( 
-# 54 "/home/filip/src/FElm/Parser/Lexer.fsl"
+# 55 "/home/filip/src/FElm/Parser/Lexer.fsl"
                                         tokenize lexbuf 
 # 110 "/home/filip/src/FElm/Parser/Lexer.fs"
           )
   | 4 -> ( 
-# 55 "/home/filip/src/FElm/Parser/Lexer.fsl"
+# 56 "/home/filip/src/FElm/Parser/Lexer.fsl"
                                         EOF 
 # 115 "/home/filip/src/FElm/Parser/Lexer.fs"
           )
   | 5 -> ( 
-# 56 "/home/filip/src/FElm/Parser/Lexer.fsl"
+# 57 "/home/filip/src/FElm/Parser/Lexer.fsl"
                                         failwith (lexeme lexbuf) 
 # 120 "/home/filip/src/FElm/Parser/Lexer.fs"
           )
   | _ -> failwith "tokenize"
 
-# 57 "/home/filip/src/FElm/Parser/Lexer.fsl"
+# 58 "/home/filip/src/FElm/Parser/Lexer.fsl"
 
 # 3000000 "/home/filip/src/FElm/Parser/Lexer.fs"
