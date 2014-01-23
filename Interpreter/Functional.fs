@@ -42,7 +42,7 @@ let rec subst x e =
       | _ -> expr
   in subst'
 and alphaConvert (x, e) =
-  let x' = Gensym.next()
+  let x' = Gensym.next x
   let e' = subst x (Var x') e
   in (x', e')  
 
