@@ -89,7 +89,7 @@ let rec reduce e =
   match tryExpand e with
     | Some (x, l1, l2, f) ->
       let (x', l2') = alphaConvert (x, l2)
-      Let (x', l1, f l2')
+      in Let (x', l1, f l2')
     | None -> reduce' e
 and reduce' = function
   | App (Fun (x, e1), e2) -> Let (x, e2, e1)                  // APPLICATION
