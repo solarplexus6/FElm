@@ -1,4 +1,4 @@
-﻿module Interpreter
+﻿module Functional
 
 open System
 open AbstractSyntax
