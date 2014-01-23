@@ -4,10 +4,9 @@ open System
 open System.IO
 open Lexer
 open Parser
+open TestUtil
 
-let input =
-  let args = Environment.GetCommandLineArgs()
-  in File.OpenText(args.[1])
-let lexbuf = Lexing.LexBuffer<_>.FromTextReader input
+let args = Environment.GetCommandLineArgs()
+let lexbuf = filenameToLexbuf args.[1]
 while not lexbuf.IsPastEndOfStream do  
     printfn "%A" (Lexer.tokenize lexbuf)
