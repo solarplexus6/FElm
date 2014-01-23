@@ -34,39 +34,48 @@
 %token LPAREN
 %token RPAREN
 
-%nonassoc LT LE EQ NEQ GE GT
-%left ADD SUB
-%left MUL DIV
-%left APP
-
 %start program
 %type <expr> program
 %%
 
 program:
-| expr EOF { $1 }
+| expr EOF                      { $1 }
 
 expr:
-| UNIT                        { Unit }
-| NUM                         { Num $1 }
-| ID                          { Var $1 }
-| FUN ID ARROW expr           { Fun ($2, $4) }
-| expr expr %prec APP         { App ($1, $2) }
-| expr ADD expr               { Op ($1, Add, $3) }
-| expr SUB expr               { Op ($1, Sub, $3) }
-| expr MUL expr               { Op ($1, Mul, $3) }
-| expr DIV expr               { Op ($1, Div, $3) }
-| expr LT expr                { Op ($1, Lt, $3) }
-| expr LE expr                { Op ($1, Le, $3) }
-| expr EQ expr                { Op ($1, Eq, $3) }
-| expr NEQ expr               { Op ($1, Neq, $3) }
-| expr GE expr                { Op ($1, Ge, $3) }
-| expr GT expr                { Op ($1, Gt, $3) }
-| IF expr THEN expr ELSE expr { If ($2, $4, $6) }
-| LET ID EQUAL expr IN expr   { Let ($2, $4, $6) }
-// input
-| LIFT1 expr expr             { Lift ($2, [$3]) }
-| LIFT2 expr expr expr        { Lift ($2, [$3; $4]) }
-| LIFT3 expr expr expr expr   { Lift ($2, [$3; $4; $5]) }
-| FOLDP expr expr expr        { Foldp ($2, $3, $4) }
-| LPAREN expr RPAREN          { $2 }
+| FUN ID ARROW expr             { Fun ($2, $4) }
+| IF expr THEN expr ELSE expr   { If ($2, $4, $6) }
+| LET ID EQUAL expr IN expr     { Let ($2, $4, $6) }
+| expr2                         { $1 }
+
+expr2:
+| expr3 LT expr3                { Op ($1, Lt, $3) }
+| expr3 LE expr3                { Op ($1, Le, $3) }
+| expr3 EQ expr3                { Op ($1, Eq, $3) }
+| expr3 NEQ expr3               { Op ($1, Neq, $3) }
+| expr3 GE expr3                { Op ($1, Ge, $3) }
+| expr3 GT expr3                { Op ($1, Gt, $3) }
+| expr3                         { $1 }
+
+expr3:
+| expr3 ADD expr4               { Op ($1, Add, $3) }
+| expr3 SUB expr4               { Op ($1, Sub, $3) }
+| expr4                         { $1 }
+
+expr4:
+| expr4 MUL expr5               { Op ($1, Mul, $3) }
+| expr4 DIV expr5               { Op ($1, Div, $3) }
+| expr5                         { $1 }
+
+expr5:
+| expr5 expr6                   { App ($1, $2) }
+| LIFT1 expr6 expr6             { Lift ($2, [$3]) }
+| LIFT2 expr6 expr6 expr6       { Lift ($2, [$3; $4]) }
+| LIFT3 expr6 expr6 expr6 expr6 { Lift ($2, [$3; $4; $5]) }
+| FOLDP expr6 expr6 expr6       { Foldp ($2, $3, $4) }
+| expr6                         { $1 }
+
+expr6:
+| UNIT                          { Unit }
+| NUM                           { Num $1 }
+| ID                            { Var $1 }
+| LPAREN expr RPAREN            { $2 }

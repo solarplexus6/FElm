@@ -64,6 +64,11 @@ type nonTerminalId =
     | NONTERM__startprogram
     | NONTERM_program
     | NONTERM_expr
+    | NONTERM_expr2
+    | NONTERM_expr3
+    | NONTERM_expr4
+    | NONTERM_expr5
+    | NONTERM_expr6
 /// This function maps integers indexes to symbolic token ids
 val tagOfToken: token -> int
 

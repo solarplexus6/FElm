@@ -1,3 +1,3 @@
 let Y = \f -> (\x -> f (\unit -> (x x))) (\x -> f (\unit -> (x x))) in
-let Fact = \g -> \n -> (if n == 0 then 1 else n * ((g ()) (n - 1))) in
-(Y Fact) 5
+let Fact = \g -> \n -> (if n == 0 then 1 else n * (g () (n - 1))) in
+Y Fact 5
