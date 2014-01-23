@@ -89,26 +89,26 @@ let rec reduce e =
   match tryExpand e with
     | Some (x, l1, l2, f) ->
       let (x', l2') = alphaConvert (x, l2)
-      in Let (x', l1, f l2')
+      in printfn "EXPAND"; Let (x', l1, f l2')
     | None -> reduce' e
 and reduce' = function
-  | App (Fun (x, e1), e2) -> Let (x, e2, e1)                  // APPLICATION
+  | App (Fun (x, e1), e2) -> printfn "APPLICATION"; Let (x, e2, e1)                  // APPLICATION
   | App (e1, e2) ->
     let r = reduce e1
     in App (r, e2)
-  | Op (Num n1, op, Num n2) -> Num (binopToFunction op n1 n2) // OP
+  | Op (Num n1, op, Num n2) -> printfn "OP"; Num (binopToFunction op n1 n2) // OP
   | Op (Num n1, op, e2) ->
     let r = reduce e2
     in Op (Num n1, op, r)
   | Op (e1, op, e2) ->
     let r = reduce e1
     in Op (r, op, e2)
-  | If (Num 0, e2, e3) -> e3                                  // COND-FALSE
-  | If (Num _, e2, e3) -> e2                                  // COND-TRUE
+  | If (Num 0, e2, e3) -> printfn "COND_FALSE"; e3                                  // COND-FALSE
+  | If (Num _, e2, e3) -> printfn "COND_TRUE"; e2                                  // COND-TRUE
   | If (e1, e2, e3) ->                
     let r = reduce e1
     in If (r, e2, e3)
-  | Let (x, e1, e2) when isValue e1 -> subst x e1 e2          // REDUCE
+  | Let (x, e1, e2) when isValue e1 -> printfn "REDUCE"; subst x e1 e2          // REDUCE
   | Let (x, e1, e2) when isSignalTerm e1 ->
     let r = reduce e2
     in Let (x, e1, r)
