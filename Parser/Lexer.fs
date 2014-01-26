@@ -1,4 +1,4 @@
-# 1 "/home/filip/src/FElm/Parser/Lexer.fsl"
+# 1 "Lexer.fsl"
  
 module Lexer
 
@@ -39,11 +39,11 @@ let tokenizeSpecial = function
   | ")"  -> RPAREN
   | _    -> failwith "Something went terribly wrong."
 
-# 42 "/home/filip/src/FElm/Parser/Lexer.fs"
+# 42 "Lexer.fs"
 let trans : uint16[] array = 
     [| 
     (* State 0 *)
-     [| 13us; 13us; 13us; 13us; 13us; 13us; 13us; 13us; 13us; 10us; 11us; 13us; 13us; 13us; 13us; 13us; 13us; 13us; 13us; 13us; 13us; 13us; 13us; 13us; 13us; 13us; 13us; 13us; 13us; 13us; 13us; 13us; 10us; 13us; 13us; 13us; 13us; 13us; 13us; 13us; 4us; 5us; 5us; 5us; 13us; 2us; 13us; 7us; 1us; 1us; 1us; 1us; 1us; 1us; 1us; 1us; 1us; 1us; 13us; 13us; 8us; 6us; 9us; 13us; 13us; 3us; 3us; 3us; 3us; 3us; 3us; 3us; 3us; 3us; 3us; 3us; 3us; 3us; 3us; 3us; 3us; 3us; 3us; 3us; 3us; 3us; 3us; 3us; 3us; 3us; 3us; 13us; 5us; 13us; 13us; 13us; 13us; 3us; 3us; 3us; 3us; 3us; 3us; 3us; 3us; 3us; 3us; 3us; 3us; 3us; 3us; 3us; 3us; 3us; 3us; 3us; 3us; 3us; 3us; 3us; 3us; 3us; 3us; 13us; 13us; 13us; 13us; 13us; 13us; 13us; 13us; 13us; 13us; 13us; 13us; 13us; 13us; 13us; 13us; 13us; 13us; 13us; 13us; 13us; 13us; 13us; 13us; 13us; 13us; 13us; 13us; 13us; 13us; 13us; 13us; 13us; 13us; 13us; 12us; |];
+     [| 13us; 13us; 13us; 13us; 13us; 13us; 13us; 13us; 13us; 10us; 11us; 13us; 13us; 10us; 13us; 13us; 13us; 13us; 13us; 13us; 13us; 13us; 13us; 13us; 13us; 13us; 13us; 13us; 13us; 13us; 13us; 13us; 10us; 13us; 13us; 13us; 13us; 13us; 13us; 13us; 4us; 5us; 5us; 5us; 13us; 2us; 13us; 7us; 1us; 1us; 1us; 1us; 1us; 1us; 1us; 1us; 1us; 1us; 13us; 13us; 8us; 6us; 9us; 13us; 13us; 3us; 3us; 3us; 3us; 3us; 3us; 3us; 3us; 3us; 3us; 3us; 3us; 3us; 3us; 3us; 3us; 3us; 3us; 3us; 3us; 3us; 3us; 3us; 3us; 3us; 3us; 13us; 5us; 13us; 13us; 13us; 13us; 3us; 3us; 3us; 3us; 3us; 3us; 3us; 3us; 3us; 3us; 3us; 3us; 3us; 3us; 3us; 3us; 3us; 3us; 3us; 3us; 3us; 3us; 3us; 3us; 3us; 3us; 13us; 13us; 13us; 13us; 13us; 13us; 13us; 13us; 13us; 13us; 13us; 13us; 13us; 13us; 13us; 13us; 13us; 13us; 13us; 13us; 13us; 13us; 13us; 13us; 13us; 13us; 13us; 13us; 13us; 13us; 13us; 13us; 13us; 13us; 13us; 12us; |];
     (* State 1 *)
      [| 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 18us; 18us; 18us; 18us; 18us; 18us; 18us; 18us; 18us; 18us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; |];
     (* State 2 *)
@@ -90,37 +90,37 @@ and tokenize  (lexbuf : Microsoft.FSharp.Text.Lexing.LexBuffer<_>) = _fslex_toke
 and _fslex_tokenize  _fslex_state lexbuf =
   match _fslex_tables.Interpret(_fslex_state,lexbuf) with
   | 0 -> ( 
-# 52 "/home/filip/src/FElm/Parser/Lexer.fsl"
+# 52 "Lexer.fsl"
                                         NUM (Convert.ToInt32(lexeme lexbuf)) 
-# 95 "/home/filip/src/FElm/Parser/Lexer.fs"
+# 95 "Lexer.fs"
           )
   | 1 -> ( 
-# 53 "/home/filip/src/FElm/Parser/Lexer.fsl"
+# 53 "Lexer.fsl"
                                         tokenizeIdent (lexeme lexbuf) 
-# 100 "/home/filip/src/FElm/Parser/Lexer.fs"
+# 100 "Lexer.fs"
           )
   | 2 -> ( 
-# 54 "/home/filip/src/FElm/Parser/Lexer.fsl"
+# 54 "Lexer.fsl"
                                         tokenizeSpecial (lexeme lexbuf) 
-# 105 "/home/filip/src/FElm/Parser/Lexer.fs"
+# 105 "Lexer.fs"
           )
   | 3 -> ( 
-# 55 "/home/filip/src/FElm/Parser/Lexer.fsl"
+# 55 "Lexer.fsl"
                                         tokenize lexbuf 
-# 110 "/home/filip/src/FElm/Parser/Lexer.fs"
+# 110 "Lexer.fs"
           )
   | 4 -> ( 
-# 56 "/home/filip/src/FElm/Parser/Lexer.fsl"
+# 56 "Lexer.fsl"
                                         EOF 
-# 115 "/home/filip/src/FElm/Parser/Lexer.fs"
+# 115 "Lexer.fs"
           )
   | 5 -> ( 
-# 57 "/home/filip/src/FElm/Parser/Lexer.fsl"
+# 57 "Lexer.fsl"
                                         failwith (lexeme lexbuf) 
-# 120 "/home/filip/src/FElm/Parser/Lexer.fs"
+# 120 "Lexer.fs"
           )
   | _ -> failwith "tokenize"
 
-# 58 "/home/filip/src/FElm/Parser/Lexer.fsl"
+# 58 "Lexer.fsl"
 
-# 3000000 "/home/filip/src/FElm/Parser/Lexer.fs"
+# 3000000 "Lexer.fs"

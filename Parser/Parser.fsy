@@ -79,3 +79,5 @@ expr6:
 | NUM                           { Num $1 }
 | ID                            { Var $1 }
 | LPAREN expr RPAREN            { $2 }
+
+%%

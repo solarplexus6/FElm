@@ -5,13 +5,14 @@
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>5bc5620b-52df-4b12-92f0-bc74273eac00</ProjectGuid>
+    <ProjectGuid>5BC5620B-52DF-4B12-92F0-BC74273EAC00</ProjectGuid>
     <OutputType>Library</OutputType>
     <RootNamespace>Tests</RootNamespace>
     <AssemblyName>Tests</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <Name>Tests</Name>
     <TargetFrameworkProfile />
+    <ProductVersion>12.0.0</ProductVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -37,27 +38,59 @@
   </PropertyGroup>
   <Import Project="$(MSBuildExtensionsPath32)\..\Microsoft SDKs\F#\3.0\Framework\v4.0\Microsoft.FSharp.Targets" Condition=" Exists('$(MSBuildExtensionsPath32)\..\Microsoft SDKs\F#\3.0\Framework\v4.0\Microsoft.FSharp.Targets')" />
   <ItemGroup>
+    <Compile Include="TestUtil.fs" />
+    <None Include="Interpreter\fix.felm" />
+    <None Include="Interpreter\list.felm" />
+    <Compile Include="Interpreter\FunctionalTest.fs" />
+    <Compile Include="Interpreter\FunctionalXunit.fs" />
+    <None Include="Parser\test1.felm" />
+    <None Include="Parser\test2.felm" />
+    <None Include="Parser\test3.felm" />
+    <None Include="Parser\test4.felm" />
+    <None Include="Parser\test5.felm" />
+    <None Include="Parser\test6.felm" />
+    <Compile Include="Parser\LexerTest.fs" />
+    <Compile Include="Parser\ParserTest.fs" />
+    <Compile Include="Parser\ParserXunit.fs" />
     <None Include="packages.config" />
     <Compile Include="VerifyXunitUnquote.fs" />
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
+    <Reference Include="FSharp.PowerPack, Version=4.0.0.1, Culture=neutral, PublicKeyToken=f536804aa0eb945b" />
     <Reference Include="mscorlib" />
-    <Reference Include="FSharp.Core, Version=4.3.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
-      <Private>True</Private>
-      <SpecificVersion>True</SpecificVersion>
-    </Reference>
+    <Reference Include="FSharp.Core, Version=4.3.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Numerics" />
     <Reference Include="Unquote">
       <HintPath>..\packages\Unquote.2.2.2\lib\net40\Unquote.dll</HintPath>
-      <Private>True</Private>
     </Reference>
     <Reference Include="xunit">
       <HintPath>..\packages\xunit.1.9.2\lib\net20\xunit.dll</HintPath>
-      <Private>True</Private>
     </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Common\Common.fsproj">
+      <Name>Common</Name>
+      <Project>{5d36a7f4-0da7-46fd-bc44-8deefd117082}</Project>
+      <Private>True</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\Interpreter\Interpreter.fsproj">
+      <Name>Interpreter</Name>
+      <Project>{e9060570-2c12-4d7e-82b5-57bf59bcfbc8}</Project>
+      <Private>True</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\Parser\Parser.fsproj">
+      <Name>Parser</Name>
+      <Project>{e48cde54-8efb-4442-910b-71130b8583e9}</Project>
+      <Private>True</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\Util\Util.fsproj">
+      <Name>Util</Name>
+      <Project>{5cb25ba2-6bb2-4fca-a03a-367833c87587}</Project>
+      <Private>True</Private>
+    </ProjectReference>
   </ItemGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

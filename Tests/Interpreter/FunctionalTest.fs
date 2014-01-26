@@ -15,10 +15,7 @@ let rec debug e =
 
 let fromFile filename =
   let lexbuf = TestUtil.filenameToLexbuf filename
-  debug (Parser.program Lexer.tokenize lexbuf)
+  debug (ParserInterface.parse lexbuf)
 
 let args = Environment.GetCommandLineArgs()
 fromFile args.[1]
-
-  
-
