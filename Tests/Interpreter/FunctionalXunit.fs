@@ -43,7 +43,6 @@ let TestWithCount () =
     test <@ match Functional.normalize lexbuf with
                 | Lift (Fun ("x",Fun ("y",Fun ("f",App (App (Var "f",Var "x"),Var "y")))),
                         [Var "Signal.x";
-                         Foldp
-                            (Fun (_,Fun (_,Op (Var _,Add,Var _))),Num 0,Var "Signal.x")])
+                         Foldp (Fun (_,Fun (_,Op (Var _,Add,Var _))),Num 0,Var "Signal.x")])
                     -> true
                 | _ -> false @>
