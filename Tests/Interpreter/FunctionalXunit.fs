@@ -46,3 +46,12 @@ let TestWithCount () =
                          Foldp (Fun (_,Fun (_,Op (Var _,Add,Var _))),Num 0,Var "Signal.x")])
                     -> true
                 | _ -> false @>
+
+[<Fact>]
+let TestCanonicalForm () =
+    let lexbuf = ParserInterface.parse (filenameToLexbuf "..\\..\\Interpreter\\canonicalForm.felm") in
+    test <@ match Functional.normalize lexbuf with
+                | Fun (y1,App (App (Fun (z1,Fun (_,Var z2)),Var y2),Var y3)) 
+                    when y1 = y2 && y2 = y2 && z1 = z2
+                    -> true
+                | _ -> false @>

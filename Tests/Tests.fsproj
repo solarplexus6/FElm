@@ -43,9 +43,10 @@
     <None Include="Interpreter\list.felm" />
     <None Include="Interpreter\graphLiftPath.felm" />
     <None Include="Interpreter\graphLiftBranch.felm" />
+    <None Include="Interpreter\withCount.felm" />
+    <None Include="Interpreter\canonicalForm.felm" />
     <Compile Include="Interpreter\FunctionalTest.fs" />
     <Compile Include="Interpreter\FunctionalXunit.fs" />
-    <None Include="Interpreter\withCount.felm" />
     <None Include="Parser\test1.felm" />
     <None Include="Parser\test2.felm" />
     <None Include="Parser\test3.felm" />
