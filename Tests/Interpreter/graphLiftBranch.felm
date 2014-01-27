@@ -1,0 +1,4 @@
+﻿let timesTwo = lift (\x -> x * 2) Signal.x in
+let plusThree = lift (\x -> x + 3) timesTwo in
+let minusFive = lift (\z -> z - 5) timesTwo in
+lift2 (\x -> \y -> x + y) plusThree minusFive

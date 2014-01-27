@@ -1,0 +1,2 @@
+﻿let pair = \x -> \y -> \f -> f x y in
+lift2 pair Signal.x (foldp (\x -> \y -> x + y) 0 Signal.x)
