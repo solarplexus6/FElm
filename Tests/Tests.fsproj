@@ -47,6 +47,8 @@
     <None Include="Interpreter\canonicalForm.felm" />
     <Compile Include="Interpreter\FunctionalTest.fs" />
     <Compile Include="Interpreter\FunctionalXunit.fs" />
+    <Compile Include="Interpreter\GraphXunit.fs" />
+    <Compile Include="Interpreter\SignalXunit.fs" />
     <None Include="Parser\test1.felm" />
     <None Include="Parser\test2.felm" />
     <None Include="Parser\test3.felm" />

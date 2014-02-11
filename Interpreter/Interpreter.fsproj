@@ -39,8 +39,8 @@
     <None Include="Script.fsx" />
     <Compile Include="Gensym.fs" />
     <Compile Include="Functional.fs" />
-    <Compile Include="Graph.fsi" />
     <Compile Include="Graph.fs" />
+    <Compile Include="Signal.fs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="mscorlib" />
