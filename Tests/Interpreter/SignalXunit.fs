@@ -12,10 +12,10 @@ open Xunit
 let TestLiftPath () = 
     let lexbuf = ParserInterface.parse (filenameToLexbuf "..\\..\\Interpreter\\graphLiftPath.felm") in
     test <@ normalize lexbuf |> buildGraph = 
-             (((6, "main", (LiftV, Fun ("y",Var "y"), Num 6)), []),
+             (((6, "main", (LiftV [], Fun ("y",Var "y"), Num 6)), []),
               (8,
                   [((6, "main", (LiftV, Fun ("y",Var "y"), Num 6)), []);
-                   ((4, "timesTwo", (LiftV, Fun ("x",Op (Var "x",Mul,Num 2)), Num 6)),
+                   ((4, "timesTwo", (LiftV , Fun ("x",Op (Var "x",Mul,Num 2)), Num 6)),
                     [(7, 6, NoChange (Num 6))]);
                    ((2, "plusThree", (LiftV, Fun ("x",Op (Var "x",Add,Num 3)), Num 3)),
                     [(5, 4, NoChange (Num 3))]);

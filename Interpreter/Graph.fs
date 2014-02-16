@@ -29,13 +29,17 @@ let vertexId (((id, _, _), _) : Vertex<_,_>) = id
 let vertexLabel (((_, label, _), _) : Vertex<_, _>) = label
 let vertexData (((_, _, vd), _) : Vertex<_, _>) = vd
 
+let edgeData ((_, _, ed) : EdgeData<'e>) : 'e = ed
+
+let isEdgeTarget id ((_, tId, _) : EdgeData<_>) : bool = id = tId
+
 let getVertexByLabel l (g : Graph<_,_>) : Vertex<_,_> =
     snd g |> List.find (fun v' -> vertexLabel v' = l)
 
 (* Get a vertex from a graph by id *)
 let getVertex v (g : Graph<_, _>) : Vertex<_,_> =
     snd g |> List.find (fun v' -> vertexId v' = v)
-(* Get all edges from a graph by a vertex id *)
+(* Get all edges from a graph by a source vertex id *)
 let getEdges v (g : Graph<_, _>) =
     g |> getVertex v |> snd
 
