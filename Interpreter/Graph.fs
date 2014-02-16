@@ -27,6 +27,7 @@ let empty : Graph<_, _> = (0, [])
 
 let vertexId (((id, _, _), _) : Vertex<_,_>) = id
 let vertexLabel (((_, label, _), _) : Vertex<_, _>) = label
+let vertexData (((_, _, vd), _) : Vertex<_, _>) = vd
 
 let getVertexByLabel l (g : Graph<_,_>) : Vertex<_,_> =
     snd g |> List.find (fun v' -> vertexLabel v' = l)
@@ -48,3 +49,7 @@ let addVertex (vd : 'v) (l : string) ((id, s) : Graph<'v, 'e>) : Vertex<'v,_> * 
 let addEdge (s : int, t : int) (e : 'e) ((id, vs) : Graph<'v, 'e>) : int * Graph<'v, 'e> =    
     let newE : EdgeData<_> = (id, t, e)
     (id, (id + 1, vs |> List.map (fun v -> if (vertexId v) = s then (fst v, newE::(snd v)) else v)))
+
+let mapV f = fun ((id, l, vd), e) -> (((id, l, f vd), e))
+let mapVd f (g : Graph<'v, _>) : Graph<'v, _> = (fst g, snd g |> List.map (mapV f))
+let mapVerts f (g : Graph<'v, _>) : Graph<'v, _> = (fst g, snd g |> List.map f)
