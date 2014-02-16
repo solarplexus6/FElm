@@ -26,7 +26,8 @@ let rec buildGraph' (label : string) (g : Graph<SigVertex, Edge>) = function
     | Var v -> (getVertexByLabel v g, g)
     | Lift (e, slist) ->
         // deps = dependencies
-        let (deps, g1) = List.fold (fun (vs, g') s -> let (v', newG) = buildGraph' null g' s in (v' :: vs, newG)) ([], g) slist
+        let (reversedDeps, g1) = List.fold (fun (vs, g') s -> let (v', newG) = buildGraph' null g' s in (v' :: vs, newG)) ([], g) slist
+        let deps = List.rev reversedDeps
         let depsDefaults = List.map lastValue deps
         let defaultV = List.fold (fun f a -> App (f,a)) e depsDefaults |> normalize
         let (v, g2) = Graph.addVertex (LiftV (List.map vertexId deps), e, defaultV) label g1
@@ -62,21 +63,18 @@ let processV (g : Graph<SigVertex, Edge>) (v : Vertex<SigVertex, Edge>) =
             let depsE = 
                 List.map (fun vId -> getEdges vId g |> List.filter (isEdgeTarget id)) depsIds |>
                 List.concat
-            if 
-                List.exists (changeE << edgeData) depsE 
+            if List.exists (changeE << edgeData) depsE 
             then
                 let depsVals = List.map (bodyE << edgeData) depsE
                 let newVal = List.fold (fun f a -> App (f,a)) e depsVals |> normalize
-                let newVs = snd g |> List.map (fun v -> 
-                    if 
-                        (vertexId v) = id 
-                    then 
-                        (fst v |> updateLastVal newVal, snd v |> List.map (fun (eId, t, _) -> (eId, t, Change newVal)))
-                    else 
-                        v)
+                let newVs =
+                    snd g |> List.map (fun v -> 
+                        if (vertexId v) = id 
+                        then 
+                            (fst v |> updateLastVal newVal, snd v |> List.map (fun (eId, t, _) -> (eId, t, Change newVal)))
+                        else v)
                 (fst g, newVs)
-            else
-                g
+            else g
         | (FoldpV, e, d) ->
             let depV = 
                 (first (fun (_, es) -> List.exists (isEdgeTarget id) es) <| snd g) |> fst
