@@ -51,9 +51,23 @@ let changeE = function
     | Change _ -> true
     | NoChange _ -> false
 
-let bodyE = function
+let bodyOfE = function
     | Change v -> v
     | NoChange v -> v
+
+let propageteChange vId newVal (g : Graph<SigVertex, Edge>) = 
+    snd g |> List.map (fun v -> 
+                        if (vertexId v) = vId
+                        then 
+                            (fst v |> updateLastVal newVal, snd v |> List.map (fun (eId, t, _) -> (eId, t, Change newVal)))
+                        else v)
+
+let propageteNoChange vId (g : Graph<'v, Edge>) =
+    snd g |> List.map (fun v -> 
+                        if (vertexId v) = vId
+                        then 
+                            (fst v, snd v |> List.map (fun (eId, t, _) -> (eId, t, NoChange <| lastValue v)))
+                        else v)
 
 let processV (g : Graph<SigVertex, Edge>) (v : Vertex<SigVertex, Edge>) =
     let (id, label, vd) = fst v
@@ -65,22 +79,24 @@ let processV (g : Graph<SigVertex, Edge>) (v : Vertex<SigVertex, Edge>) =
                 List.concat
             if List.exists (changeE << edgeData) depsE 
             then
-                let depsVals = List.map (bodyE << edgeData) depsE
+                let depsVals = List.map (bodyOfE << edgeData) depsE
                 let newVal = List.fold (fun f a -> App (f,a)) e depsVals |> normalize
-                let newVs =
-                    snd g |> List.map (fun v -> 
-                        if (vertexId v) = id 
-                        then 
-                            (fst v |> updateLastVal newVal, snd v |> List.map (fun (eId, t, _) -> (eId, t, Change newVal)))
-                        else v)
-                (fst g, newVs)
-            else g
-        | (FoldpV, e, d) ->
-            let depV = 
-                (first (fun (_, es) -> List.exists (isEdgeTarget id) es) <| snd g) |> fst
-                //List.map (fun vId -> getEdges vId g |> List.filter (isEdgeTarget id))  |>
-            //    List.concat
-            g
+                (fst g, propageteChange id newVal g)
+            else
+                // tutaj jednak trzeba zaktualizowac na NoChange, bo przeciez wczesniej moglo byc Change
+                (fst g, propageteNoChange id g)
+        | (FoldpV, f, d) ->
+            let depE = 
+                snd g |> first (fun (_, es) -> List.exists (isEdgeTarget id) es) |> 
+                snd |> first (isEdgeTarget id) // nieefektywne, ale tymczasowe
+                |> edgeData
+            if changeE depE
+            then
+                let newVal = App (App (f, (bodyOfE depE)), d) |> normalize
+                (fst g, propageteChange id newVal g)
+            else
+                (fst g, propageteNoChange id g)
+
 
 // todo: prawdziwy topological sort przez dfsa
 // chwilowo dzieki letom mamy od razu posortowane odpowiednio wierzcholki
