@@ -21,7 +21,6 @@ let lastValue (((_, _, (_, _, v)), _) : Vertex<SigVertex, _>) : expr = v
 let updateLastVal newVal ((id, l, (sd, f, v)) : VertexData<SigVertex>) : VertexData<SigVertex> = 
     (id, l, (sd, f, newVal))
 
-// todo: przypadki gdy na koncu leta mamy wartosc, nie sygnal
 let rec buildGraph' (label : string) (g : Graph<SigVertex, Edge>) = function
     | Var v -> (getVertexByLabel v g, g)
     | Lift (e, slist) ->
@@ -38,8 +37,8 @@ let rec buildGraph' (label : string) (g : Graph<SigVertex, Edge>) = function
         (v, snd <| Graph.addEdge (vertexId v', vertexId v) (NoChange <| lastValue v') g2)
     | Let (l, s, r) -> 
         let (_, g') = buildGraph' l g s
-        buildGraph' label g' r
-    | _ -> undefined
+        buildGraph' label g' r          // r is guaranteed to be a signal term
+    | _ -> failwith "buildGraph' received something other than a signal term"
 
 let baseGraph : Graph<SigVertex, Edge> =
     Graph.addVertex (InputV, Unit, Num 0) "Window.height" Graph.empty |> snd |>
