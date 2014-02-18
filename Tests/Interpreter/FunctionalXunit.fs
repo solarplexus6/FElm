@@ -56,3 +56,9 @@ let TestCanonicalForm () =
                     when y1 = y2 && y2 = y2 && z1 = z2
                     -> true
                 | _ -> false @>
+
+
+[<Fact>]
+let TestLetWithFunApp () =
+    let lexbuf = ParserInterface.parse (filenameToLexbuf "..\\..\\Interpreter\\letBodyFunApp.felm") in
+    test <@ Functional.normalize lexbuf = Lift (Fun ("w",Var "w"),[Var "Window.width"]) @>

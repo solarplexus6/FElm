@@ -1,0 +1,2 @@
+﻿let y = (let x = lift (\w -> w) Window.width in \z -> x)
+in y ()

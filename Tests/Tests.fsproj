@@ -50,6 +50,7 @@
     <Compile Include="Interpreter\FunctionalXunit.fs" />
     <Compile Include="Interpreter\GraphXunit.fs" />
     <Compile Include="Interpreter\SignalXunit.fs" />
+    <None Include="Interpreter\letBodyFunApp.felm" />
     <None Include="Parser\test1.felm" />
     <None Include="Parser\test2.felm" />
     <None Include="Parser\test3.felm" />
