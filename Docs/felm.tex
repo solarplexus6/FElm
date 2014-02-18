@@ -1,0 +1,104 @@
+%
+% Dokumentacja do projektu z Semantyk języków programowania
+% Rafał Łukaszewski, Filip Pawlak 
+% Wrocław 2014
+%
+
+\documentclass[11pt,leqno]{article}
+
+\usepackage[polish]{babel}
+\usepackage[utf8]{inputenc}
+\usepackage[OT4]{fontenc} 
+\usepackage{caption}
+\usepackage{graphicx}
+\usepackage{listings}
+\usepackage{parcolumns}
+\usepackage{color}
+\usepackage{hyperref}
+\usepackage{ulem}
+\usepackage{amsmath}
+
+%%%%%%%%%%%%%%%%%%
+% Kropka po numerze paragrafu, podparagrafu itp. 
+
+\makeatletter
+ \renewcommand\@seccntformat[1]{\csname the#1\endcsname.\quad}
+ \renewcommand\numberline[1]{#1.\hskip0.7em}
+\makeatother
+
+%%%%%%%%%%%%%%%%%%
+% Kropka po numerze tablicy, rysunku i ustawienie czcionki dla etykiety. 
+
+\captionsetup{labelfont=sc,labelsep=period}
+
+%%%%%%%%%%%%%%%%%%
+% Inna numeracja wzorów.
+
+\renewcommand{\theequation}{\arabic{section}.\arabic{equation}}
+
+%%%%%%%%%%%%%%%%%%
+% Nowe komendy
+
+\title{{\textbf{Reaktywny język funkcyjny \textbf{FElm}}}\\[1ex]
+       {\Large Semantyka języków programowania}\\[-1ex]}
+\author{Filip Pawlak \and Rafał Łukaszewski}
+\date{Wrocław, dnia \today\ r.}
+
+\begin{document}
+\thispagestyle{empty}
+\maketitle
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Temat}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+Celem projektu jest zadanie semantyki oraz implementacja interpretera dla reaktywnego języka funkcyjnego będącego minimalnym podzbiorem języka Elm, opisanym jako FElm w pracy: \href{http://people.seas.harvard.edu/~chong/abstracts/CzaplickiC13.html} {Asynchronous Functional Reactive Programming for GUIs}, na której oparty jest projekt.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Podstawowe założenia}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{itemize}
+  \item gorliwy
+  \item silnie, ale dynamicznie typowany
+  \item podstawowe konstrukcje dla sygnałów, tj lift oraz foldp, ale bez async
+  \item podobnie jak w Elmie - brak sygnału sygnałów oraz sygnałów definiowanych rekurencyjnie
+  \item typy danych: liczby całkowite, wartości boolowskie i oczywiście sygnały
+  \item wejście - zdefiniowany z góry zbiór sygnałów wejściowych
+\end{itemize}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Składnia}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+Składnie języka jest całkowicie zgodna z \cite[p.~3.1]{CC}, w związku z czym nie podajemy jej definicji ponownie w tym dokumencie.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Semantyka}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\subsection{Ewaluacja funkcyjna}
+
+\cite[p.~3.3.1]{CC}
+\cite[fig. 6]{CC}
+
+\subsection{Budowa grafu}
+
+\subsection{Propagacja zdarzeń w grafie}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% Bibliografia
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%\newpage
+\thispagestyle{empty}
+\begin{thebibliography}{99}
+
+\bibitem{CC}   E.~Czaplicki, S.~Chong, \textit{Asynchronous Functional Reactive Programming for GUIs},
+              PLDI’13, 2013.
+	  
+\end{thebibliography}
+
+\end{document}
