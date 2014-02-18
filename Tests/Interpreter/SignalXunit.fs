@@ -10,7 +10,7 @@ open Swensen.Unquote
 open Xunit
 
 [<Fact>]
-let TestLiftPath () = 
+let TestLiftPathBuildGraph () = 
     let lexbuf = ParserInterface.parse (filenameToLexbuf "..\\..\\Interpreter\\graphLiftPath.felm") in
     test <@ normalize lexbuf |> buildGraph = 
              (((6, "main", (LiftV [4], Fun ("y",Var "y"), Num 6)), []),
@@ -38,13 +38,13 @@ let liftBranchGraph =
                    ((0, "Window.height", (InputV, Unit, Num 0)), [])]))
 
 [<Fact>]
-let TestLiftBranch () = 
+let TestLiftBranchBuildGraph () = 
     let lexbuf = ParserInterface.parse (filenameToLexbuf "..\\..\\Interpreter\\graphLiftBranch.felm")
     test <@ normalize lexbuf |> buildGraph = liftBranchGraph @>
 
 // test z dokladnoscia do nazw niektorych zmiennych
 [<Fact>]
-let TestFoldp () = 
+let TestFoldpBuildGraph () = 
     let lexbuf = ParserInterface.parse (filenameToLexbuf "..\\..\\Interpreter\\withCount.felm") in
     test <@ match normalize lexbuf |> buildGraph with
              | (((4, "main",
@@ -135,9 +135,9 @@ let TestDispatchLiftBranch () =
                   [((8, "main", (LiftV [4; 6], Fun ("x",Fun ("y",Op (Var "x",Add,Var "y"))), Num 7678)),
                     []);
                    ((6, "minusFive", (LiftV [2], Fun ("z",Op (Var "z",Sub,Num 5)), Num 3835)),
-                    [(10, 8, NoChange (Num 3835))]);
+                    [(10, 8, Change (Num 3835))]);
                    ((4, "plusThree", (LiftV [2], Fun ("x",Op (Var "x",Add,Num 3)), Num 3843)),
-                    [(9, 8, NoChange (Num 3843))]);
+                    [(9, 8, Change (Num 3843))]);
                    ((2, "timesTwo", (LiftV [1], Fun ("x",Op (Var "x",Mul,Num 2)), Num 3840)),
                     [(7, 6, Change (Num 3840)); (5, 4, Change (Num 3840))]);
                    ((1, "Window.width", (InputV, Unit, Num 1920)), [(3, 2, Change (Num 1920))]);
