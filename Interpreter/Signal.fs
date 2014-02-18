@@ -105,7 +105,12 @@ let topologicalSort (g : Graph<'v, _>) : Vertex<'v,_> list =
 // todo: dispatch ma propagowac NoChange na sygnalach wejsciowych w ktorych
 //       nie pojawila sie nowa wartosc?
 // todo: przerobic dispatch dla wielu eventu wystepujacych jednoczesnie
-let dispatch (e : expr, sn : varname) g = 
+let dispatch (g : Graph<SigVertex, Edge>) (e : expr, sn : varname) = 
+    let inputs = snd g |> List.filter (fun v -> match vertexData v with (InputV, _, _) -> true | _ -> false) |> List.map vertexId
+    // resetujemy wierzcholki Input
+    let g1 = List.fold (fun accG inV -> (fst accG, propagateNoChange inV accG)) g inputs
     let v = getVertexByLabel sn g
-    let g' = (fst g, propagateChange (vertexId v) e g)
-    List.fold processV g' <| topologicalSort g'
+    let g2 = (fst g1, propagateChange (vertexId v) e g1)
+    List.fold processV g2 <| topologicalSort g2
+
+let simulate (g : Graph<SigVertex, Edge>) (events : (expr * varname) list) = List.fold dispatch g events

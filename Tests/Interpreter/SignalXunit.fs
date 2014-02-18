@@ -130,7 +130,7 @@ let TestProcessVFoldpChange() =
 let TestDispatchLiftBranch () =
     let lexbuf = ParserInterface.parse (filenameToLexbuf "..\\..\\Interpreter\\graphLiftBranch.felm")
     let (_, g) = normalize lexbuf |> buildGraph
-    test <@ dispatch (Num 1920, "Window.width") g = 
+    test <@ dispatch g (Num 1920, "Window.width") = 
                 (11,
                   [((8, "main", (LiftV [4; 6], Fun ("x",Fun ("y",Op (Var "x",Add,Var "y"))), Num 7678)),
                     []);
@@ -142,3 +142,39 @@ let TestDispatchLiftBranch () =
                     [(7, 6, Change (Num 3840)); (5, 4, Change (Num 3840))]);
                    ((1, "Window.width", (InputV, Unit, Num 1920)), [(3, 2, Change (Num 1920))]);
                    ((0, "Window.height", (InputV, Unit, Num 0)), [])]) @>
+
+[<Fact>]
+let TestSimulateLiftBranch () =
+    let lexbuf = ParserInterface.parse (filenameToLexbuf "..\\..\\Interpreter\\graphLiftBranch.felm")
+    let (_, g) = normalize lexbuf |> buildGraph
+    test <@ simulate g [(Num 1920, "Window.width"); (Num 1000, "Window.width"); (Num 300, "Window.width"); (Num 500, "Window.width")] = 
+                (11,
+                  [((8, "main", (LiftV [4; 6], Fun ("x",Fun ("y",Op (Var "x",Add,Var "y"))), Num 1998)),
+                    []);
+                   ((6, "minusFive", (LiftV [2], Fun ("z",Op (Var "z",Sub,Num 5)), Num 995)),
+                    [(10, 8, Change (Num 995))]);
+                   ((4, "plusThree", (LiftV [2], Fun ("x",Op (Var "x",Add,Num 3)), Num 1003)),
+                    [(9, 8, Change (Num 1003))]);
+                   ((2, "timesTwo", (LiftV [1], Fun ("x",Op (Var "x",Mul,Num 2)), Num 1000)),
+                    [(7, 6, Change (Num 1000)); (5, 4, Change (Num 1000))]);
+                   ((1, "Window.width", (InputV, Unit, Num 500)), [(3, 2, Change (Num 500))]);
+                   ((0, "Window.height", (InputV, Unit, Num 0)), [])]) @>
+
+// test z dokladnoscia do nazw niektorych zmiennych
+[<Fact>]
+let TestSimulateWithCount () =
+    let lexbuf = ParserInterface.parse (filenameToLexbuf "..\\..\\Interpreter\\withCount.felm")
+    let (_, g) = normalize lexbuf |> buildGraph
+    test <@ match simulate g [(Num 1920, "Window.width"); (Num 1000, "Window.width"); (Num 300, "Window.width"); (Num 500, "Window.width"); (Num 100, "Window.height")] with
+             | (7,
+                      [((4, "main",
+                         (LiftV [1; 2], Fun ("x",Fun ("y",Fun ("f",App (App (Var "f",Var "x"),Var "y")))),
+                          Fun (_,App (App (Var _,Num 500),Num 4)))), []);
+                       ((2, null,
+                         (FoldpV, Fun (_,Fun (_,Op (Var _,Add,Num 1))), Num 4)),
+                        [(6, 4, NoChange (Num 4))]);
+                       ((1, "Window.width", (InputV, Unit, Num 500)),
+                        [(5, 4, NoChange (Num 500)); (3, 2, NoChange (Num 500))]);
+                       ((0, "Window.height", (InputV, Unit, Num 100)), [])])
+                 -> true
+             | _ -> false @>
