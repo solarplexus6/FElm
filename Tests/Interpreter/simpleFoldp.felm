@@ -1,0 +1,1 @@
+﻿lift (\s -> s) (foldp (\x -> \acc -> acc - x) 1000 Window.height)

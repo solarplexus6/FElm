@@ -45,6 +45,7 @@
     <None Include="Interpreter\graphLiftBranch.felm" />
     <None Include="Interpreter\withCount.felm" />
     <None Include="Interpreter\canonicalForm.felm" />
+    <None Include="Interpreter\simpleFoldp.felm" />
     <Compile Include="Interpreter\FunctionalTest.fs" />
     <Compile Include="Interpreter\FunctionalXunit.fs" />
     <Compile Include="Interpreter\GraphXunit.fs" />

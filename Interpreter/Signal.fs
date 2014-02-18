@@ -55,14 +55,14 @@ let bodyOfE = function
     | Change v -> v
     | NoChange v -> v
 
-let propageteChange vId newVal (g : Graph<SigVertex, Edge>) = 
+let propagateChange vId newVal (g : Graph<SigVertex, Edge>) = 
     snd g |> List.map (fun v -> 
                         if (vertexId v) = vId
                         then 
                             (fst v |> updateLastVal newVal, snd v |> List.map (fun (eId, t, _) -> (eId, t, Change newVal)))
                         else v)
 
-let propageteNoChange vId (g : Graph<'v, Edge>) =
+let propagateNoChange vId (g : Graph<'v, Edge>) =
     snd g |> List.map (fun v -> 
                         if (vertexId v) = vId
                         then 
@@ -81,10 +81,10 @@ let processV (g : Graph<SigVertex, Edge>) (v : Vertex<SigVertex, Edge>) =
             then
                 let depsVals = List.map (bodyOfE << edgeData) depsE
                 let newVal = List.fold (fun f a -> App (f,a)) e depsVals |> normalize
-                (fst g, propageteChange id newVal g)
+                (fst g, propagateChange id newVal g)
             else
                 // tutaj jednak trzeba zaktualizowac na NoChange, bo przeciez wczesniej moglo byc Change
-                (fst g, propageteNoChange id g)
+                (fst g, propagateNoChange id g)
         | (FoldpV, f, d) ->
             let depE = 
                 snd g |> first (fun (_, es) -> List.exists (isEdgeTarget id) es) |> 
@@ -93,14 +93,20 @@ let processV (g : Graph<SigVertex, Edge>) (v : Vertex<SigVertex, Edge>) =
             if changeE depE
             then
                 let newVal = App (App (f, (bodyOfE depE)), d) |> normalize
-                (fst g, propageteChange id newVal g)
+                (fst g, propagateChange id newVal g)
             else
-                (fst g, propageteNoChange id g)
+                (fst g, propagateNoChange id g)
 
 
 // todo: prawdziwy topological sort przez dfsa
 // chwilowo dzieki letom mamy od razu posortowane odpowiednio wierzcholki
-let topologicalSort (g : Graph<_, _>) : int list =
-    List.map vertexId (snd g) |> List.rev
+let topologicalSort (g : Graph<'v, _>) : Vertex<'v,_> list =
+    snd g |> List.rev
 
-//let dispatch (e : expr, sn : varname) g = 
+// todo: dispatch ma propagowac NoChange na sygnalach wejsciowych w ktorych
+//       nie pojawila sie nowa wartosc?
+// todo: przerobic dispatch dla wielu eventu wystepujacych jednoczesnie
+let dispatch (e : expr, sn : varname) g = 
+    let v = getVertexByLabel sn g
+    let g' = (fst g, propagateChange (vertexId v) e g)
+    List.fold processV g' <| topologicalSort g'
