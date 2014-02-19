@@ -15,9 +15,9 @@ open Xunit
 let TestLetWithFunApp () =
     let lexbuf = ParserInterface.parse (filenameToLexbuf "..\\..\\Interpreter\\letBodyFunApp.felm") in
     test <@ Signal.sigNormalize lexbuf = 
-                (Input 4,
+                (Signal 4,
                  (6,
-                  [((4, null, (LiftV [0], Fun ("w^39",Var "w^39"), Num 0)), []);
-                   ((2, null, (LiftV [1], Fun ("y^34",Var "y^34"), Num 0)), []);
-                   ((1, "Window.width", (InputV, Unit, Num 0)), [(3, 2, NoChange (Num 0))]);
-                   ((0, "Window.height", (InputV, Unit, Num 0)), [(5, 4, NoChange (Num 0))])])) @>
+                  [((4, null, (LiftV [1], Fun ("w^39",Var "w^39"), Num 0)), []);
+                   ((2, null, (LiftV [0], Fun ("y^34",Var "y^34"), Num 0)), []);
+                   ((1, "Window.width", (InputV, Unit, Num 0)), [(5, 4, NoChange (Num 0))]);
+                   ((0, "Window.height", (InputV, Unit, Num 0)), [(3, 2, NoChange (Num 0))])])) @>

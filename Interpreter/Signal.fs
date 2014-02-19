@@ -67,13 +67,13 @@ let buildGraph = buildGraph' "main" baseEnv baseGraph
 //
 
 let isSignal = function
-  | Input _ -> true
+  | Signal _ -> true
   | _ -> false
 
 let isSimple e = isValue e || isSignal e
 
 let signalToInt = function
-  | Input i -> i
+  | Signal i -> i
   | _ -> failwith "signalToInt"
 
 let rec sigReduce (g : Graph<SigVertex, Edge>) =
@@ -104,10 +104,10 @@ let rec sigReduce (g : Graph<SigVertex, Edge>) =
       let (v, g1) = Graph.addVertex (LiftV depNums, e1, defaultV) null g
       let i = vertexId v    
       let g2 = List.fold (fun g' i' -> snd <| Graph.addEdge (i', i) (NoChange (lastValue <| getVertex i' g')) g') g1 depNums
-      (Input i, g2)
+      (Signal i, g2)
     | Lift (e1, elist) when isValue e1 ->
       let rec splitLift = function
-        | (((Input i) as e) :: es) ->
+        | (((Signal i) as e) :: es) ->
           let (elist1, ek, elist2) = splitLift es
           in ((e :: elist1), ek, elist2)
         | (e :: es) -> ([], e, es)
@@ -118,11 +118,11 @@ let rec sigReduce (g : Graph<SigVertex, Edge>) =
     | Lift (e1, elist) ->
       let (r, g') = aux e1
       in (Lift (r, elist), g')
-    | Foldp (e1, e2, Input i) when isValue e1 && isValue e2 -> // FOLDP
+    | Foldp (e1, e2, Signal i) when isValue e1 && isValue e2 -> // FOLDP
       let (v, g1) = Graph.addVertex (FoldpV, e1, e2) null g
       let i' = vertexId v
       let g2 = snd <| Graph.addEdge (i, i') (NoChange (lastValue <| getVertex i g1)) g1
-      (Input i, g2)
+      (Signal i, g2)
     | Foldp (e1, e2, e3) when isValue e1 && isValue e2 ->
       let (r, g') = aux e3
       in (Foldp (e1, e2, r), g')
@@ -140,8 +140,8 @@ let rec sigNormalize' (e, g) =
   else sigReduce g e |> sigNormalize'
 
 let includePrelude e = 
-    Let (windowWidthVar, Input 0, 
-        Let (windowHeightVar, Input 1, e))
+    Let (windowHeightVar, Signal 0, 
+        Let (windowWidthVar, Signal 1, e))
 
 let rec sigNormalize e = sigNormalize' (includePrelude e, baseGraph)
 

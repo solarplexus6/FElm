@@ -22,6 +22,6 @@ type expr = Unit
           | Op of expr * binop * expr
           | If of expr * expr * expr
           | Let of varname * expr * expr
-          | Input of int
+          | Signal of int
           | Lift of expr * expr list
           | Foldp of expr * expr * expr

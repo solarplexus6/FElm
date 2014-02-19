@@ -55,7 +55,7 @@ let isValue = function
 let rec isSignalTerm = function
   | Var _ -> true
   | Let (_, e1, e2) -> isSignalTerm e1 && isFinalTerm e2
-  | Input _ -> true
+  | Signal _ -> true
   | Lift (e1, elist) -> isValue e1 && List.forall isSignalTerm elist
   | Foldp (e1, e2, e3) -> isValue e1 && isValue e2 && isSignalTerm e3
   | _ -> false

@@ -27,7 +27,7 @@ let pretty_print =
       | Op (e1, op, e2) -> aux e1 + " " + binopToString op + " " + aux e2
       | If (e1, e2, e3) -> "if " + aux e1 + " then " + aux e2 + " else " + aux e3
       | Let (x, e1, e2) -> "let " + x + " = " + aux e1 + " in\n" + pretty (ind + 1) e2
-      | Input _ -> ""
+      | Signal _ -> ""
       | Lift (e1, elist) ->
         let elistStrings = List.map (fun e -> " " + aux e) elist
         "lift" + string (List.length elist) + " " + aux e1 + List.fold (+) "" elistStrings
