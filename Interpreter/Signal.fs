@@ -21,30 +21,34 @@ let lastValue (((_, _, (_, _, v)), _) : Vertex<SigVertex, _>) : expr = v
 let updateLastVal newVal ((id, l, (sd, f, v)) : VertexData<SigVertex>) : VertexData<SigVertex> = 
     (id, l, (sd, f, newVal))
 
-let rec buildGraph' (label : string) (g : Graph<SigVertex, Edge>) = function
-    | Var v -> (getVertexByLabel v g, g)
+let rec buildGraph'(env : Map<varname, Vertex<SigVertex, Edge>>) (g : Graph<SigVertex, Edge>) = function
+    | Var v -> (env.[v], g)
     | Lift (e, slist) ->
         // deps = dependencies
-        let (reversedDeps, g1) = List.fold (fun (vs, g') s -> let (v', newG) = buildGraph' null g' s in (v' :: vs, newG)) ([], g) slist
+        let (reversedDeps, g1) = List.fold (fun (vs, g') s -> let (v', newG) = buildGraph' env g' s in (v' :: vs, newG)) ([], g) slist
         let deps = List.rev reversedDeps
         let depsDefaults = List.map lastValue deps
         let defaultV = List.fold (fun f a -> App (f,a)) e depsDefaults |> normalize
-        let (v, g2) = Graph.addVertex (LiftV (List.map vertexId deps), e, defaultV) label g1
+        let (v, g2) = Graph.addVertex (LiftV (List.map vertexId deps), e, defaultV) "whatevs" g1
         (v, List.fold (fun g' v' -> snd <| Graph.addEdge (vertexId v', vertexId v) (NoChange <| lastValue v') g') g2 deps)
     | Foldp (e, d, s) ->
-        let (v', g1) = buildGraph' null g s
-        let (v, g2) = Graph.addVertex (FoldpV, e, d) label g1
+        let (v', g1) = buildGraph' env g s
+        let (v, g2) = Graph.addVertex (FoldpV, e, d) "whatevs" g1
         (v, snd <| Graph.addEdge (vertexId v', vertexId v) (NoChange <| lastValue v') g2)
     | Let (l, s, r) -> 
-        let (_, g') = buildGraph' l g s
-        buildGraph' label g' r          // r is guaranteed to be a signal term
+        let (v, g') = buildGraph' env g s
+        let env' = Map.add l v env
+        buildGraph' env' g' r          // r is guaranteed to be a signal term
     | _ -> failwith "buildGraph' received something other than a signal term"
 
 let baseGraph : Graph<SigVertex, Edge> =
     Graph.addVertex (InputV, Unit, Num 0) "Window.height" Graph.empty |> snd |>
     Graph.addVertex (InputV, Unit, Num 0) "Window.width" |> snd
 
-let buildGraph = buildGraph' "main" baseGraph
+let baseEnv =
+    Map.empty;;
+
+let buildGraph = buildGraph' baseEnv baseGraph
 
 let changeE = function
     | Change _ -> true
