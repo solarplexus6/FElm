@@ -21,6 +21,49 @@ let lastValue (((_, _, (_, _, v)), _) : Vertex<SigVertex, _>) : expr = v
 let updateLastVal newVal ((id, l, (sd, f, v)) : VertexData<SigVertex>) : VertexData<SigVertex> = 
     (id, l, (sd, f, newVal))
 
+type Env = Map<varname, Vertex<SigVertex, Edge>>
+
+let rec buildGraph' (label : varname) (env : Env) (g : Graph<SigVertex, Edge>) = function
+    | Var v -> (env.[v], g)
+    | Lift (e, slist) ->
+        // deps = dependencies
+        let (reversedDeps, g1) = List.fold (fun (vs, g') s -> let (v', newG) = buildGraph' label env g' s in (v' :: vs, newG)) ([], g) slist
+        let deps = List.rev reversedDeps
+        let depsDefaults = List.map lastValue deps
+        let defaultV = List.fold (fun f a -> App (f,a)) e depsDefaults |> normalize
+        let (v, g2) = Graph.addVertex (LiftV (List.map vertexId deps), e, defaultV) label g1
+        (v, List.fold (fun g' v' -> snd <| Graph.addEdge (vertexId v', vertexId v) (NoChange <| lastValue v') g') g2 deps)
+    | Foldp (e, d, s) ->
+        let (v', g1) = buildGraph' label env g s
+        let (v, g2) = Graph.addVertex (FoldpV, e, d) null g1
+        (v, snd <| Graph.addEdge (vertexId v', vertexId v) (NoChange <| lastValue v') g2)
+    | Let (l, s, r) -> 
+        let (v, g') = buildGraph' l env g s
+        let env' = Map.add l v env
+        buildGraph' label env' g' r          // r should be a signal term
+    | _ -> failwith "buildGraph' received something other than a signal term"
+
+[<Literal>]
+let windowWidthVar = "Window.width"
+
+[<Literal>]
+let windowHeightVar = "Window.height"
+
+let baseGraph : Graph<SigVertex, Edge> =
+    Graph.addVertex (InputV, Unit, Num 0) windowHeightVar Graph.empty |> snd |>
+    Graph.addVertex (InputV, Unit, Num 0) windowWidthVar |> snd
+
+let baseEnv : Env =
+    Map.empty |> 
+    Map.add windowHeightVar (getVertexByLabel windowHeightVar baseGraph) |>
+    Map.add windowWidthVar (getVertexByLabel windowWidthVar baseGraph)
+
+let buildGraph = buildGraph' "main" baseEnv baseGraph
+
+//
+// Reduce combined with graph building for normalization of functions returning signals
+//
+
 let isSignal = function
   | Input _ -> true
   | _ -> false
@@ -90,36 +133,15 @@ let rec sigReduce (g : Graph<SigVertex, Edge>) =
     | _ -> failwith "sigReduce couldn't find a valid redex"
   in aux
 
-type Env = Map<varname, Vertex<SigVertex, Edge>>
+let rec sigNormalize' (e, g) =
+  if isSimple e then (e, g)
+  else sigReduce g e |> sigNormalize'
 
-let rec buildGraph'(env : Env) (g : Graph<SigVertex, Edge>) = function
-    | Var v -> (env.[v], g)
-    | Lift (e, slist) ->
-        // deps = dependencies
-        let (reversedDeps, g1) = List.fold (fun (vs, g') s -> let (v', newG) = buildGraph' env g' s in (v' :: vs, newG)) ([], g) slist
-        let deps = List.rev reversedDeps
-        let depsDefaults = List.map lastValue deps
-        let defaultV = List.fold (fun f a -> App (f,a)) e depsDefaults |> normalize
-        let (v, g2) = Graph.addVertex (LiftV (List.map vertexId deps), e, defaultV) "whatevs" g1
-        (v, List.fold (fun g' v' -> snd <| Graph.addEdge (vertexId v', vertexId v) (NoChange <| lastValue v') g') g2 deps)
-    | Foldp (e, d, s) ->
-        let (v', g1) = buildGraph' env g s
-        let (v, g2) = Graph.addVertex (FoldpV, e, d) "whatevs" g1
-        (v, snd <| Graph.addEdge (vertexId v', vertexId v) (NoChange <| lastValue v') g2)
-    | Let (l, s, r) -> 
-        let (v, g') = buildGraph' env g s
-        let env' = Map.add l v env
-        buildGraph' env' g' r          // r should be a signal term
-    | _ -> failwith "buildGraph' received something other than a signal term"
+let rec sigNormalize e = sigNormalize' (e, baseGraph)
 
-let baseGraph : Graph<SigVertex, Edge> =
-    Graph.addVertex (InputV, Unit, Num 0) "Window.height" Graph.empty |> snd |>
-    Graph.addVertex (InputV, Unit, Num 0) "Window.width" |> snd
-
-let baseEnv : Env =
-    Map.empty;;
-
-let buildGraph = buildGraph' baseEnv baseGraph
+//
+// Propagation of events
+//
 
 let changeE = function
     | Change _ -> true
@@ -171,18 +193,15 @@ let processV (g : Graph<SigVertex, Edge>) (v : Vertex<SigVertex, Edge>) =
             else
                 (fst g, propagateNoChange id g)
 
-
 // todo: prawdziwy topological sort przez dfsa
 // chwilowo dzieki letom mamy od razu posortowane odpowiednio wierzcholki
 let topologicalSort (g : Graph<'v, _>) : Vertex<'v,_> list =
     snd g |> List.rev
 
-// todo: dispatch ma propagowac NoChange na sygnalach wejsciowych w ktorych
-//       nie pojawila sie nowa wartosc?
 // todo: przerobic dispatch dla wielu eventu wystepujacych jednoczesnie
 let dispatch (g : Graph<SigVertex, Edge>) (e : expr, sn : varname) = 
     let inputs = snd g |> List.filter (fun v -> match vertexData v with (InputV, _, _) -> true | _ -> false) |> List.map vertexId
-    // resetujemy wierzcholki Input
+    // resetujemy wierzcholki Input (propagacja NoChange)
     let g1 = List.fold (fun accG inV -> (fst accG, propagateNoChange inV accG)) g inputs
     let v = getVertexByLabel sn g
     let g2 = (fst g1, propagateChange (vertexId v) e g1)
