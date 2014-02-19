@@ -21,7 +21,9 @@ let lastValue (((_, _, (_, _, v)), _) : Vertex<SigVertex, _>) : expr = v
 let updateLastVal newVal ((id, l, (sd, f, v)) : VertexData<SigVertex>) : VertexData<SigVertex> = 
     (id, l, (sd, f, newVal))
 
-let rec buildGraph'(env : Map<varname, Vertex<SigVertex, Edge>>) (g : Graph<SigVertex, Edge>) = function
+type Env = Map<varname, Vertex<SigVertex, Edge>>
+
+let rec buildGraph'(env : Env) (g : Graph<SigVertex, Edge>) = function
     | Var v -> (env.[v], g)
     | Lift (e, slist) ->
         // deps = dependencies
@@ -45,7 +47,7 @@ let baseGraph : Graph<SigVertex, Edge> =
     Graph.addVertex (InputV, Unit, Num 0) "Window.height" Graph.empty |> snd |>
     Graph.addVertex (InputV, Unit, Num 0) "Window.width" |> snd
 
-let baseEnv =
+let baseEnv : Env =
     Map.empty;;
 
 let buildGraph = buildGraph' baseEnv baseGraph
