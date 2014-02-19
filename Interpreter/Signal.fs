@@ -21,6 +21,75 @@ let lastValue (((_, _, (_, _, v)), _) : Vertex<SigVertex, _>) : expr = v
 let updateLastVal newVal ((id, l, (sd, f, v)) : VertexData<SigVertex>) : VertexData<SigVertex> = 
     (id, l, (sd, f, newVal))
 
+let isSignal = function
+  | Input _ -> true
+  | _ -> false
+
+let isSimple e = isValue e || isSignal e
+
+let signalToInt = function
+  | Input i -> i
+  | _ -> failwith "signalToInt"
+
+let rec sigReduce (g : Graph<SigVertex, Edge>) =
+  let rec aux = function
+    | App (Fun (x, e1), e2) -> printfn "APPLICATION"; (Let (x, e2, e1), g)                  // APPLICATION
+    | App (e1, e2) ->
+      let (r, g') = aux e1
+      in (App (r, e2), g')
+    | Op (Num n1, op, Num n2) -> printfn "OP"; (Num (binopToFunction op n1 n2), g) // OP
+    | Op (Num n1, op, e2) ->
+      let (r, _) = aux e2
+      in (Op (Num n1, op, r), g)
+    | Op (e1, op, e2) ->
+      let (r, _) = aux e1
+      in (Op (r, op, e2), g)
+    | If (Num 0, e2, e3) -> printfn "COND_FALSE"; (e3, g)                                  // COND-FALSE
+    | If (Num _, e2, e3) -> printfn "COND_TRUE"; (e2, g)                                  // COND-TRUE
+    | If (e1, e2, e3) ->                
+      let (r, _) = aux e1
+      in (If (r, e2, e3), g)
+    | Let (x, e1, e2) when isSimple e1 -> printfn "REDUCE"; (subst x e1 e2, g)          // REDUCE
+    | Let (x, e1, e2) ->
+      let (r, g') = aux e1
+      in (Let (x, r, e2), g')
+    | Lift (e1, elist) when isValue e1 && List.forall isSignal elist ->
+      let depNums = List.map signalToInt elist
+      let defaultV = List.fold (fun f i -> App (f, lastValue <| getVertex i g)) e1 depNums |> normalize
+      let (v, g1) = Graph.addVertex (LiftV depNums, e1, defaultV) "whatevs" g
+      let i = vertexId v    
+      let g2 = List.fold (fun g' i' -> snd <| Graph.addEdge (i', i) (NoChange (lastValue <| getVertex i' g')) g') g1 depNums
+      (Input i, g2)
+    | Lift (e1, elist) when isValue e1 ->
+      let rec splitLift = function
+        | (((Input i) as e) :: es) ->
+          let (elist1, ek, elist2) = splitLift es
+          in ((e :: elist1), ek, elist2)
+        | (e :: es) -> ([], e, es)
+        | [] -> failwith "splitLift"
+      let (elist1, ek, elist2) = splitLift elist
+      let (r, g') = aux ek
+      in (Lift (e1, elist1 @ [r] @ elist2), g')
+    | Lift (e1, elist) ->
+      let (r, g') = aux e1
+      in (Lift (r, elist), g')
+    | Foldp (e1, e2, Input i) when isValue e1 && isValue e2 ->
+      let (v, g1) = Graph.addVertex (FoldpV, e1, e2) "whatevs" g
+      let i' = vertexId v
+      let g2 = snd <| Graph.addEdge (i, i') (NoChange (lastValue <| getVertex i g1)) g1
+      (Input i, g2)
+    | Foldp (e1, e2, e3) when isValue e1 && isValue e2 ->
+      let (r, g') = aux e3
+      in (Foldp (e1, e2, r), g')
+    | Foldp (e1, e2, e3) when isValue e1 ->
+      let (r, g') = aux e2
+      in (Foldp (e1, r, e3), g')
+    | Foldp (e1, e2, e3) ->
+      let (r, g') = aux e1
+      in (Foldp (r, e2, e3), g')
+    | _ -> failwith "sigReduce couldn't find a valid redex"
+  in aux
+
 type Env = Map<varname, Vertex<SigVertex, Edge>>
 
 let rec buildGraph'(env : Env) (g : Graph<SigVertex, Edge>) = function
