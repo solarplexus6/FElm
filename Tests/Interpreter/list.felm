@@ -4,10 +4,6 @@ let fst = \p -> p (\x -> \y -> x) in
 let snd = \p -> p (\x -> \y -> y) in
 let nth' = \g -> \l -> \n -> if n == 0 then fst l else g (snd l) (n - 1) in
 let nth = fix nth' in
-let length' = \g -> \l -> if l == () then 0 else g (snd l) in
-let length = fix length' in
-let map' = \g -> \f -> \l -> if l == () then () else pair (f (fst l)) (g f (snd l)) in
-let map = fix map' in
 let list = pair 1 (pair 2 (pair 3 (pair 4 (pair 5 ())))) in
 nth list 4
 
