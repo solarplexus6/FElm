@@ -17,6 +17,7 @@
 \usepackage{hyperref}
 \usepackage{ulem}
 \usepackage{amsmath}
+\usepackage{bussproofs}
 
 %%%%%%%%%%%%%%%%%%
 % Kropka po numerze paragrafu, podparagrafu itp. 
@@ -84,6 +85,32 @@ Składnie języka jest całkowicie zgodna z \cite[p.~3.1]{CC}, w związku z czym
 \cite[fig. 6]{CC}
 
 \subsection{Budowa grafu}
+
+\begin{prooftree}
+\AxiomC{A}
+\AxiomC{B}
+\AxiomC{C}
+\TrinaryInfC{D}
+\end{prooftree}
+
+\begin{prooftree}
+\AxiomC{A}
+\AxiomC{B}
+\AxiomC{C}
+\BinaryInfC{D}
+\BinaryInfC{E}
+\end{prooftree}
+
+\begin{prooftree}
+\AxiomC{$P$}
+\AxiomC{}
+\RightLabel{\scriptsize(1)}
+\UnaryInfC{$\neg P$}
+\BinaryInfC{$\bot$}
+\RightLabel{\scriptsize(1)}
+\UnaryInfC{$\neg\neg P$}
+\end{prooftree}
+
 
 \subsection{Propagacja zdarzeń w grafie}
 
