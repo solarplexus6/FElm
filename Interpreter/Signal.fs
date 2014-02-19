@@ -109,7 +109,7 @@ let rec buildGraph'(env : Env) (g : Graph<SigVertex, Edge>) = function
     | Let (l, s, r) -> 
         let (v, g') = buildGraph' env g s
         let env' = Map.add l v env
-        buildGraph' env' g' r          // r is guaranteed to be a signal term
+        buildGraph' env' g' r          // r should be a signal term
     | _ -> failwith "buildGraph' received something other than a signal term"
 
 let baseGraph : Graph<SigVertex, Edge> =
