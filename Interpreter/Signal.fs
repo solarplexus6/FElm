@@ -23,6 +23,8 @@ let updateLastVal newVal ((id, l, (sd, f, v)) : VertexData<SigVertex>) : VertexD
 
 type Env = Map<varname, Vertex<SigVertex, Edge>>
 
+// Ver 1
+
 let rec buildGraph' (label : varname) (env : Env) (g : Graph<SigVertex, Edge>) = function
     | Var v -> (env.[v], g)
     | Lift (e, slist) ->
@@ -61,7 +63,7 @@ let baseEnv : Env =
 let buildGraph = buildGraph' "main" baseEnv baseGraph
 
 //
-// Reduce combined with graph building for normalization of functions returning signals
+// Ver 2: Reduce combined with graph building
 //
 
 let isSignal = function
@@ -99,7 +101,7 @@ let rec sigReduce (g : Graph<SigVertex, Edge>) =
     | Lift (e1, elist) when isValue e1 && List.forall isSignal elist -> // LIFT
       let depNums = List.map signalToInt elist
       let defaultV = List.fold (fun f i -> App (f, lastValue <| getVertex i g)) e1 depNums |> normalize
-      let (v, g1) = Graph.addVertex (LiftV depNums, e1, defaultV) "whatevs" g
+      let (v, g1) = Graph.addVertex (LiftV depNums, e1, defaultV) null g
       let i = vertexId v    
       let g2 = List.fold (fun g' i' -> snd <| Graph.addEdge (i', i) (NoChange (lastValue <| getVertex i' g')) g') g1 depNums
       (Input i, g2)
@@ -117,7 +119,7 @@ let rec sigReduce (g : Graph<SigVertex, Edge>) =
       let (r, g') = aux e1
       in (Lift (r, elist), g')
     | Foldp (e1, e2, Input i) when isValue e1 && isValue e2 -> // FOLDP
-      let (v, g1) = Graph.addVertex (FoldpV, e1, e2) "whatevs" g
+      let (v, g1) = Graph.addVertex (FoldpV, e1, e2) null g
       let i' = vertexId v
       let g2 = snd <| Graph.addEdge (i, i') (NoChange (lastValue <| getVertex i g1)) g1
       (Input i, g2)
@@ -137,7 +139,11 @@ let rec sigNormalize' (e, g) =
   if isSimple e then (e, g)
   else sigReduce g e |> sigNormalize'
 
-let rec sigNormalize e = sigNormalize' (e, baseGraph)
+let includePrelude e = 
+    Let (windowWidthVar, Input 0, 
+        Let (windowHeightVar, Input 1, e))
+
+let rec sigNormalize e = sigNormalize' (includePrelude e, baseGraph)
 
 //
 // Propagation of events
@@ -198,7 +204,7 @@ let processV (g : Graph<SigVertex, Edge>) (v : Vertex<SigVertex, Edge>) =
 let topologicalSort (g : Graph<'v, _>) : Vertex<'v,_> list =
     snd g |> List.rev
 
-// todo: przerobic dispatch dla wielu eventu wystepujacych jednoczesnie
+// todo: przerobic dispatch dla wielu eventu wystepujacych jednoczesnie?
 let dispatch (g : Graph<SigVertex, Edge>) (e : expr, sn : varname) = 
     let inputs = snd g |> List.filter (fun v -> match vertexData v with (InputV, _, _) -> true | _ -> false) |> List.map vertexId
     // resetujemy wierzcholki Input (propagacja NoChange)
