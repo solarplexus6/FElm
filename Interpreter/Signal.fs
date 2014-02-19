@@ -53,7 +53,7 @@ let rec sigReduce (g : Graph<SigVertex, Edge>) =
     | Let (x, e1, e2) ->
       let (r, g') = aux e1
       in (Let (x, r, e2), g')
-    | Lift (e1, elist) when isValue e1 && List.forall isSignal elist ->
+    | Lift (e1, elist) when isValue e1 && List.forall isSignal elist -> // LIFT
       let depNums = List.map signalToInt elist
       let defaultV = List.fold (fun f i -> App (f, lastValue <| getVertex i g)) e1 depNums |> normalize
       let (v, g1) = Graph.addVertex (LiftV depNums, e1, defaultV) "whatevs" g
@@ -73,7 +73,7 @@ let rec sigReduce (g : Graph<SigVertex, Edge>) =
     | Lift (e1, elist) ->
       let (r, g') = aux e1
       in (Lift (r, elist), g')
-    | Foldp (e1, e2, Input i) when isValue e1 && isValue e2 ->
+    | Foldp (e1, e2, Input i) when isValue e1 && isValue e2 -> // FOLDP
       let (v, g1) = Graph.addVertex (FoldpV, e1, e2) "whatevs" g
       let i' = vertexId v
       let g2 = snd <| Graph.addEdge (i, i') (NoChange (lastValue <| getVertex i g1)) g1
