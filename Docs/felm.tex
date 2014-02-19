@@ -63,7 +63,7 @@ Celem projektu jest zadanie semantyki oraz implementacja interpretera dla reakty
 \begin{itemize}
   \item gorliwy
   \item silnie, ale dynamicznie typowany
-  \item podstawowe konstrukcje dla sygnałów, tj lift oraz foldp, ale bez async
+  \item podstawowe konstrukcje dla sygnałów, tj. lift oraz foldp, ale bez async
   \item podobnie jak w Elmie - brak sygnału sygnałów oraz sygnałów definiowanych rekurencyjnie
   \item typy danych: liczby całkowite, wartości boolowskie i oczywiście sygnały
   \item wejście - zdefiniowany z góry zbiór sygnałów wejściowych
@@ -73,7 +73,7 @@ Celem projektu jest zadanie semantyki oraz implementacja interpretera dla reakty
 \section{Składnia}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-Składnie języka jest całkowicie zgodna z \cite[p.~3.1]{CC}, w związku z czym nie podajemy jej definicji ponownie w tym dokumencie.
+Składnia języka jest całkowicie zgodna z \cite[p.~3.1]{CC}, w związku z czym nie podajemy jej definicji ponownie w tym dokumencie.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Semantyka}
@@ -85,6 +85,8 @@ Składnie języka jest całkowicie zgodna z \cite[p.~3.1]{CC}, w związku z czym
 \cite[fig. 6]{CC}
 
 \subsection{Budowa grafu}
+
+semantyka denotacyjna
 
 \begin{prooftree}
 \AxiomC{A}
@@ -111,8 +113,15 @@ Składnie języka jest całkowicie zgodna z \cite[p.~3.1]{CC}, w związku z czym
 \UnaryInfC{$\neg\neg P$}
 \end{prooftree}
 
+\subsection{Inne podejście}
+
+semantyka operacyjna
 
 \subsection{Propagacja zdarzeń w grafie}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Uwagi dot. implementacji}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
