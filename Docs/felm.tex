@@ -194,32 +194,59 @@ Aby reprezentować pojawienie się nowej wartości w sygnale lub jej brak dodaje
 $$ type \: Event \: \alpha = NoChange \: \alpha \: | \: Change \: \alpha $$
 Pojawienie się nowej wartości w wierzchołku będziemy propagować przez ustawienie na wychodzących z niego krawędziach etykiety $Change\:v$ (gdzie $v$ oznacza nową wartość znajdującą się w wierzchołku), natomiast gdy nic nowego nie pojawi się w wierzchołku oznaczymy jego krawędzie etykietami $NoChange\:v$ (w tym przypadku $v$ to ostatnia wartość jaka pojawiła się w danym sygnale). W ten sposób unikniemy ponownego obliczania wartości w wierzchołkach, kiedy nie jest to konieczne.
 
-Kiedy posiadamy już poprawnie zbudowany graf propagację nowych wartości pojawiających się w sygnałach wejściowych przeprowadzamy przez:
+Kiedy posiadamy już poprawnie zbudowany graf propagację nowych wartości pojawiających się w sygnale wejściowym przeprowadzamy w trzech krokach:
 \begin{enumerate}
 \item oznaczenie krawędzi wychodzących wierzchołka danego sygnału wejściowego etykietą $Change\:v$
 \item oznaczenie krawędzi wychodzących reszty wierzchołków sygnałów wejściowych etykietą $NoChange\:v$ 
-\item odpowiednie przetworzenie każdego wierzchołka (nie reprezentującego sygnału wejściowego) według porządku topologicznego grafu zgodnie z regułami przedstawionymi poniżej:
+\item odpowiednie przetworzenie każdego wierzchołka (nie reprezentującego sygnału wejściowego) w kolejności wyznaczonej przez porządek topologiczny grafu zgodnie z regułami przedstawionymi poniżej:
 \end{enumerate}
 
 Dla grafu $g$ i wierzchołka $v = \langle d, \langle FoldpV,f \rangle \rangle$:
 \begin{itemize}
-\item jeśli $ \langle v_s , v, Change\:val \rangle \in E(g) $, to w wynikowym grafie $g'$ mamy
+\item jeśli $ \langle v_s , v, 1, Change\:val \rangle \in E(g) $, to w wynikowym grafie $g'$ mamy
 \begin {align*}
 V(g') &= V(g) \setminus \{ v \} \cup \{ nV \} \\
-E(g') &= E(g) \setminus \{ \langle v, \_, \_ \rangle : \langle v, \_ , \_ \rangle \in E(g) \} \cup \{ \langle v, v_t, Change\: nVal \rangle : \langle v, v_t , \_ \rangle \in E(g) \} \\
+E(g') &= \begin{aligned} E(g) &\setminus \{ \langle v, \_, _, \_ \rangle : \langle v, \_ , _, \_ \rangle \in E(g) \} \\ 
+&\cup \{ \langle v, v_t, k, Change\: nVal \rangle : \langle v, v_t , k, \_ \rangle \in E(g) \} \end{aligned} \\
 \text{gdzie} \: nVal &= N [\![f \: val \: d]\!] \\
 nV &= \langle nVal , \langle FoldpV,f \rangle \rangle
 \end{align*}
 \item w innym przypadku:
 \begin{align*}
-E(g') = E(g) &\setminus \{ \langle v, \_, \_ \rangle : \langle v, \_ , \_ \rangle \in E(g) \} \\ 
-&\cup \{ \langle v, v_t, NoChange\: d \rangle : \langle v, v_t , \_ \rangle \in E(g) \}
+E(g') = E(g) &\setminus \{ \langle v, \_, _, \_ \rangle : \langle v, \_ , _, \_ \rangle \in E(g) \} \\ 
+&\cup \{ \langle v, v_t, k, NoChange\: d \rangle : \langle v, v_t , k, \_ \rangle \in E(g) \}
 \end{align*}
 \end{itemize}
 
+Dla grafu $g$ i wierzchołka $v = \langle d, \langle LiftV_n,f \rangle \rangle$:
+\begin{itemize}
+\item jeśli $ \exists i . \langle v_s , v, i, Change \: \_ \rangle \in E(g) $, to w wynikowym grafie $g'$ mamy
+\begin {align*}
+V(g') &= V(g) \setminus \{ v \} \cup \{ nV \} \\
+E(g') &= \begin{aligned} E(g) &\setminus \{ \langle v, \_, _, \_ \rangle : \langle v, \_ , _, \_ \rangle \in E(g) \} \\ 
+&\cup \{ \langle v, v_t, k, Change\: nVal \rangle : \langle v, v_t , k, \_ \rangle \in E(g) \} \end{aligned} \\
+\text{gdzie} \:
+nV &= \langle nVal , \langle Lift_n,f \rangle \rangle \\
+nVal &= N [\![f \: vals(1) \ldots vals(n) \: d]\!] \\
+vals &= \{ \texttt{bodyOf} \: e : \langle \_ , v, i, e \rangle \in E(g), 1 \leq i \leq n \} \\
+\texttt{bodyOf} \: e \: &= \texttt{case} \: e \: \texttt{of} \: NoChange \: a \rightarrow a \: | \: Change \: a \rightarrow a
+\end{align*}
+\item w przeciwnym razie:
+\begin{align*}
+E(g') = E(g) &\setminus \{ \langle v, \_, \_, \_ \rangle : \langle v, \_ , \_, \_ \rangle \in E(g) \} \\ 
+&\cup \{ \langle v, v_t, k, NoChange\: d \rangle : \langle v, v_t , k, \_ \rangle \in E(g) \}
+\end{align*}
+\end{itemize}
+
+Obsługa strumienia zdarzeń to po prostu sekwencyjne stosowanie powyższej strategii.
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Uwagi dot. implementacji}
+\section{Uwagi dotyczące implementacji}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+Zaimplementowane zostały obie wersje semantyki budowy grafu, o których mowa w pkt. 4.2 i 4.3. Pierwsza jest zastosowana w funkcji \\ \texttt{Signal.buildGraph} (i \texttt{Functional.normalize}), natomiast druga w funkcji \texttt{Signal.sigNormalize}.
+
+Zbiór sygnałów wejściowych jest w implementacji wprowadzany w postaci swego rodzaju preludium, tj. obsługa właściwego programu zaczyna się na wcześniej utworzonym środowisku oraz grafie, w którym już znajdują się dobrze zdefiniowane wierzchołki sygnałów wejściowych.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
