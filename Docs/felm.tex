@@ -201,29 +201,21 @@ Kiedy posiadamy już poprawnie zbudowany graf propagację nowych wartości pojaw
 \item odpowiednie przetworzenie każdego wierzchołka (nie reprezentującego sygnału wejściowego) według porządku topologicznego grafu zgodnie z regułami przedstawionymi poniżej:
 \end{enumerate}
 
-\begin{prooftree}
-\AxiomC{$ \langle v_s, v, Change\:val \rangle \in E(g) $}
-\RightLabel{\quad FOLDP-CHANGE}
-\UnaryInfC{$ \langle v = \langle d, \langle FoldpV,f \rangle \rangle, g \rangle \Rightarrow g' $}
-\end{prooftree}
-
+Dla grafu $g$ i wierzchołka $v = \langle d, \langle FoldpV,f \rangle \rangle$:
+\begin{itemize}
+\item jeśli $ \langle v_s , v, Change\:val \rangle \in E(g) $, to w wynikowym grafie $g'$ mamy
 \begin {align*}
-\text{gdzie} \: nVal &= N [\![f \: val \: d]\!] \\
-nV& = \langle nVal , \langle FoldpV,f \rangle \rangle \\
 V(g') &= V(g) \setminus \{ v \} \cup \{ nV \} \\
-E(g') &= E(g) \setminus \{ \langle v, \_, \_ \rangle : \langle v, \_ , \_ \rangle \in E(g) \} \cup \{ \langle v, v_t, Change\: nVal \rangle : \langle v, v_t , \_ \rangle \in E(g) \}
+E(g') &= E(g) \setminus \{ \langle v, \_, \_ \rangle : \langle v, \_ , \_ \rangle \in E(g) \} \cup \{ \langle v, v_t, Change\: nVal \rangle : \langle v, v_t , \_ \rangle \in E(g) \} \\
+\text{gdzie} \: nVal &= N [\![f \: val \: d]\!] \\
+nV &= \langle nVal , \langle FoldpV,f \rangle \rangle
 \end{align*}
-
-\begin{prooftree}
-\AxiomC{$ \langle v_s, v, NoChange \: \_ \rangle \in E(g) $}
-\RightLabel{\quad FOLDP-NOCHANGE}
-\UnaryInfC{$ \langle v = \langle d, \langle FoldpV,f \rangle \rangle, g \rangle \Rightarrow g' $}
-\end{prooftree}
-
-\begin {align*}
-\text{gdzie} \: 
-E(g') &= E(g) \setminus \{ \langle v, \_, \_ \rangle : \langle v, \_ , \_ \rangle \in E(g) \} \cup \{ \langle v, v_t, NoChange\: d \rangle : \langle v, v_t , \_ \rangle \in E(g) \}
+\item w innym przypadku:
+\begin{align*}
+E(g') = E(g) &\setminus \{ \langle v, \_, \_ \rangle : \langle v, \_ , \_ \rangle \in E(g) \} \\ 
+&\cup \{ \langle v, v_t, NoChange\: d \rangle : \langle v, v_t , \_ \rangle \in E(g) \}
 \end{align*}
+\end{itemize}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Uwagi dot. implementacji}
