@@ -19,6 +19,7 @@
 \usepackage{amsmath}
 \usepackage{bussproofs}
 \usepackage{url}
+\usepackage{amsfonts}
 
 \newcommand{\denote}[1]{\text{$[\![ $#1$ ]\!]$}}
 
@@ -94,15 +95,15 @@ Podczas pierwszego etapu interpretacji korzystamy bezpośrednio z semantyki oper
 \subsection{Budowa grafu}
 Ten etap ewaluacji opisujemy w formacie semantyki denotacyjnej. Wierzchołki w grafie reprezentujemy następująco:
 \begin{gather*}
-Vertex : N \times Expr \times \left\{ {LiftV \times Expr, FoldpV \times Expr, InputV}\right\} 
+Vertex : \mathbb N \times Expr \times \left\{ {LiftV \times Expr, FoldpV \times Expr, InputV}\right\} 
 \end{gather*}
 
 Pierwszy element krotki to numer wierzchołka, drugi to jego wartość, zaś trzeci określa jego typ (wierzchołki typu LiftV i FoldpV dodatkowo przechowują funkcję przekazaną jako argument w wywołaniu odpowiednio \texttt{lift$_{n}$} i \texttt{foldp}). Pomijamy definicję funkcji value : Vertex $\rightarrow$ Expr, która dla danego wierzchołka zwraca jego wartość. Wymagamy by krawędzie pomiędzy dwoma wierzchołkami były numerowane (z uwagi na to, że kolejność argumentów sygnałowych jest istotna):
 \begin{gather*}
-Edge : Vertex \times Vertex \times N
+Edge : Vertex \times Vertex \times \mathbb N^+
 \end{gather*}
 
-Pomijamy reprezentację grafu, jednak żądamy by istniała funkcja Next : Graph $\rightarrow$ N, która dla danego grafu podaje kolejny dostępny numer wierzchołka. Poprzez N oznaczamy funkcję typu Expr $\rightarrow$ Expr, będącą funkcją semantyczną zadaną przez reguły ewaluacji funkcyjnej. Definiujemy również środowisko:
+Pomijamy reprezentację grafu, jednak żądamy by istniała funkcja Next : Graph $\rightarrow$ $\mathbb N$, która dla danego grafu podaje kolejny dostępny numer wierzchołka. Poprzez N oznaczamy funkcję typu Expr $\rightarrow$ Expr, będącą funkcją semantyczną zadaną przez reguły ewaluacji funkcyjnej. Definiujemy również środowisko:
 \begin{gather*}
 Env : Var \rightarrow Vertex  
 \end{gather*}
@@ -148,7 +149,7 @@ env' &= update\:l\:v_{s}\:env \\
 
 Powyższa semantyka wiernie bazuje na pracy \cite{CC} i klarownie oddziela od siebie ewaluację elementów funkcyjnych i sygnałowych. Wadą takiego podejścia jest nieoczekiwane zatrzymywanie się ewaluacji dla niektórych wyrażeń, jak np.:$\newline$ $\newline$
 \texttt{let y = (let x = Window.width in $\backslash$z -> x) $\newline$ in y ()} $\newline$ $\newline$
-Jednym z możliwych rozwiązań tej sytuacji jest połączenie obu etapów ewaluacji w jeden i budowanie grafu równolegle z ewaluacją elementów funkcyjnych. Nową relację redukcji oznaczamy w ten sam sposób, lecz teraz jest ona określona na zbiorze Expr $\times$ Graph. Do składni abstrakcyjnej dodajemy pomocnicze wyrażenia \texttt{signal} i (i $\in$ N) reprezentujące sygnały (wierzchołki w grafie). Dodajemy je również do kategorii wartości. Konteksty ewaluacyjne definiujemy niemal identycznie, jednak z definicji kontekstu usuwamy produkcję której prawą stroną jest \texttt{let} x = s \texttt{in} E (zatem nie ewaluujemy ciała konstrukcji \texttt{let}). Definiujemy regułę CONTEXT dla nowej relacji:
+Jednym z możliwych rozwiązań tej sytuacji jest połączenie obu etapów ewaluacji w jeden i budowanie grafu równolegle z ewaluacją elementów funkcyjnych. Nową relację redukcji oznaczamy w ten sam sposób, lecz teraz jest ona określona na zbiorze Expr $\times$ Graph. Do składni abstrakcyjnej dodajemy pomocnicze wyrażenia \texttt{signal} i (i $\in$ $\mathbb N$) reprezentujące sygnały (wierzchołki w grafie). Dodajemy je również do kategorii wartości. Konteksty ewaluacyjne definiujemy niemal identycznie, jednak z definicji kontekstu usuwamy produkcję której prawą stroną jest \texttt{let} x = s \texttt{in} E (zatem nie ewaluujemy ciała konstrukcji \texttt{let}). Definiujemy regułę CONTEXT dla nowej relacji:
 
 \begin{prooftree}
 \AxiomC{$\langle$e, g$\rangle$ $\rightarrow$ $\langle$e$'$, g$'$$\rangle$}
@@ -199,7 +200,7 @@ Kiedy posiadamy już poprawnie zbudowany graf propagację nowych wartości pojaw
 \begin{enumerate}
 \item oznaczenie krawędzi wychodzących wierzchołka danego sygnału wejściowego etykietą $Change\:v$
 \item oznaczenie krawędzi wychodzących reszty wierzchołków sygnałów wejściowych etykietą $NoChange\:v$ 
-\item odpowiednie przetworzenie każdego wierzchołka (nie reprezentującego sygnału wejściowego) w kolejności wyznaczonej przez porządek topologiczny grafu zgodnie z regułami przedstawionymi poniżej:
+\item odpowiednie przetworzenie każdego wierzchołka (nie reprezentującego sygnału wejściowego) w kolejności wyznaczonej przez porządek topologiczny grafu zgodnie z regułami przedstawionymi poniżej (dla uproszczenia pomijamy numery wierzchołków):
 \end{enumerate}
 \newpage
 Dla grafu $g$ i wierzchołka $v = \langle d, \langle FoldpV,f \rangle \rangle$:
