@@ -81,14 +81,14 @@ Składnia języka jest całkowicie zgodna z \cite[p.~3.1]{CC}, w związku z czym
 \section{Semantyka}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-Zgodnie z \cite[p.~3.3]{CC} w bazowej wersji systemu proces interpretacji programu jest podzielony na dwa etapy. Wpierw wykonywana jest redukcja wszystkich konstrukcji funkcyjnych do termu w języku pośrednim. W tej postaci  pozostają już tylko konstrukcje sygnałów i korzystamy z niej w procesie rozwiązywania zależności pomiędzy konstrukcjami sygnałowymi. Wzorując się na intuicjach zawartych w \cite[p.~3.3.2]{CC} explicite tworzymy graf sygnału w trakcie etapu drugiego, z którego to grafu ostatecznie korzystamy podczas przetwarzania nadchodzących zdarzeń.
+Zgodnie z \cite[p.~3.3]{CC} proces interpretacji programu jest podzielony na dwa etapy. Wpierw wykonywana jest redukcja wszystkich konstrukcji funkcyjnych do termu w języku pośrednim. W tej postaci  pozostają już tylko konstrukcje sygnałów i korzystamy z niej w procesie rozwiązywania zależności pomiędzy konstrukcjami sygnałowymi. Wzorując się na intuicjach zawartych w \cite[p.~3.3.2]{CC} explicite tworzymy graf sygnału w trakcie etapu drugiego, z którego to grafu ostatecznie korzystamy podczas przetwarzania nadchodzących zdarzeń.
 
 
 Sygnały definiujemy jako strumienie dyskretnych wartości, oraz przetwarzamy je synchronicznie, tj. kiedy w sygnale wejściowym pojawi się nowa wartość musimy rozpropagować ją w całym grafie zanim będziemy mogli obsłużyć nowe zdarzenie. Przyjmujemy, że zbiór sygnałów wejściowych jest stały i zdefiniowany z góry. Podobnie jak w \nocite{CC} (mimo, że nie jest to dosłownie wyszczególnione), czas również traktujemy jak zwykły sygnał, tj. abstrahujemy od pojęcia czasu podczas definiowania semantyki.
 
 \subsection{Ewaluacja funkcyjna}
 
-W podstawowej wersji systemu podczas pierwszego etapu interpretacji korzystamy bezpośrednio z semantyki operacyjnej opisanej w \cite[p.~3.3.1]{CC}, z regułami zdefiniowanymi w \cite[fig.~6]{CC}. 
+Podczas pierwszego etapu interpretacji korzystamy bezpośrednio z semantyki operacyjnej opisanej w \cite[p.~3.3.1]{CC}, z regułami zdefiniowanymi w \cite[fig.~6]{CC}. 
 
 \subsection{Budowa grafu}
 Ten etap ewaluacji opisujemy w formacie semantyki denotacyjnej. Wierzchołki w grafie reprezentujemy następująco:
@@ -177,7 +177,6 @@ E(g') = E(g) \cup \{\langle v_{i_{j}},\:v,\:j \rangle : 1 \leq j \leq n\}
 V(g') = V(g) \cup \left\{ {v}\right\} \\
 E(g') = E(g) \cup \{\langle v_{i},\:v,\:1 \rangle \}
 \end{gather}
-2
 \subsection{Propagacja zdarzeń w grafie}
 
 Aby reprezentować pojawienie się nowej wartości w sygnale lub jej brak dodajemy do krawędzi grafu dodatkową informację typu:
@@ -193,10 +192,27 @@ Kiedy posiadamy już poprawnie zbudowany graf propagację nowych wartości pojaw
 
 \begin{prooftree}
 \AxiomC{$ \langle v_s, v, Change\:val \rangle \in E(g) $}
-%%\RightLabel{\scriptsize(foldpChange)}
-\UnaryInfC{$ \langle v = \langle d, \langle FoldpV,f \rangle \rangle, g \rangle \Rightarrow g[v/\langle nV, \langle FoldpV,f \rangle \rangle][\langle v, *,\_ \rangle/\langle v, *,Change\:nV \rangle] $}
+\RightLabel{\quad FOLDP-CHANGE}
+\UnaryInfC{$ \langle v = \langle d, \langle FoldpV,f \rangle \rangle, g \rangle \Rightarrow g' $}
 \end{prooftree}
-gdzie $nV = N [\![f\:val\:d]\!]$
+
+\begin {align*}
+\text{gdzie} \: nVal &= N [\![f \: val \: d]\!] \\
+nV& = \langle nVal , \langle FoldpV,f \rangle \rangle \\
+V(g') &= V(g) \setminus \{ v \} \cup \{ nV \} \\
+E(g') &= E(g) \setminus \{ \langle v, \_, \_ \rangle : \langle v, \_ , \_ \rangle \in E(g) \} \cup \{ \langle v, v_t, Change\: nVal \rangle : \langle v, v_t , \_ \rangle \in E(g) \}
+\end{align*}
+
+\begin{prooftree}
+\AxiomC{$ \langle v_s, v, NoChange \: \_ \rangle \in E(g) $}
+\RightLabel{\quad FOLDP-NOCHANGE}
+\UnaryInfC{$ \langle v = \langle d, \langle FoldpV,f \rangle \rangle, g \rangle \Rightarrow g' $}
+\end{prooftree}
+
+\begin {align*}
+\text{gdzie} \: 
+E(g') &= E(g) \setminus \{ \langle v, \_, \_ \rangle : \langle v, \_ , \_ \rangle \in E(g) \} \cup \{ \langle v, v_t, NoChange\: d \rangle : \langle v, v_t , \_ \rangle \in E(g) \}
+\end{align*}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Uwagi dot. implementacji}
