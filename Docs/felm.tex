@@ -200,20 +200,22 @@ Kiedy posiadamy już poprawnie zbudowany graf propagację nowych wartości pojaw
 \item oznaczenie krawędzi wychodzących reszty wierzchołków sygnałów wejściowych etykietą $NoChange\:v$ 
 \item odpowiednie przetworzenie każdego wierzchołka (nie reprezentującego sygnału wejściowego) w kolejności wyznaczonej przez porządek topologiczny grafu zgodnie z regułami przedstawionymi poniżej:
 \end{enumerate}
-
+\newpage
 Dla grafu $g$ i wierzchołka $v = \langle d, \langle FoldpV,f \rangle \rangle$:
 \begin{itemize}
 \item jeśli $ \langle v_s , v, 1, Change\:val \rangle \in E(g) $, to w wynikowym grafie $g'$ mamy
 \begin {align*}
 V(g') &= V(g) \setminus \{ v \} \cup \{ nV \} \\
 E(g') &= \begin{aligned} E(g) &\setminus \{ \langle v, \_, \_, \_ \rangle : \langle v, \_ , \_, \_ \rangle \in E(g) \} \\ 
-&\cup \{ \langle nV, v_t, k, Change\: nVal \rangle : \langle v, v_t , k, \_ \rangle \in E(g) \} \end{aligned} \\
+&\cup \{ \langle nV, v_t, k, Change\: nVal \rangle : \langle v, v_t , k, \_ \rangle \in E(g) \} \\
+&\setminus \{ \langle \_, v, \_, \_ \rangle : \langle \_, v, \_, \_ \rangle \in E(g) \} \\
+&\cup \{ \langle v_s, nV, k, ev \rangle : \langle v_s, v, k, ev \rangle \in E(g) \} \end{aligned} \\
 \text{gdzie} \: nVal &= N [\![f \: val \: d]\!] \\
 nV &= \langle nVal , \langle FoldpV,f \rangle \rangle
 \end{align*}
 \item w innym przypadku:
 \begin{align*}
-E(g') = E(g) &\setminus \{ \langle v, \_, _, \_ \rangle : \langle v, \_ , _, \_ \rangle \in E(g) \} \\ 
+E(g') = E(g) &\setminus \{ \langle v, \_, \_, \_ \rangle : \langle v, \_ , _, \_ \rangle \in E(g) \} \\ 
 &\cup \{ \langle v, v_t, k, NoChange\: d \rangle : \langle v, v_t , k, \_ \rangle \in E(g) \}
 \end{align*}
 \end{itemize}
@@ -224,7 +226,9 @@ Dla grafu $g$ i wierzchołka $v = \langle d, \langle LiftV_n,f \rangle \rangle$:
 \begin {align*}
 V(g') &= V(g) \setminus \{ v \} \cup \{ nV \} \\
 E(g') &= \begin{aligned} E(g) &\setminus \{ \langle v, \_, \_, \_ \rangle : \langle v, \_, \_, \_ \rangle \in E(g) \} \\ 
-&\cup \{ \langle nV, v_t, k, Change\: nVal \rangle : \langle v, v_t , k, \_ \rangle \in E(g) \} \end{aligned} \\
+&\cup \{ \langle nV, v_t, k, Change\: nVal \rangle : \langle v, v_t , k, \_ \rangle \in E(g) \} \\
+&\setminus \{ \langle \_, v, \_, \_ \rangle : \langle \_, v, \_, \_ \rangle \in E(g) \} \\
+&\cup \{ \langle v_s, nV, k, ev \rangle : \langle v_s, v, k, ev \rangle \in E(g) \} \end{aligned} \\
 \text{gdzie} \:
 nV &= \langle nVal , \langle Lift_n,f \rangle \rangle \\
 nVal &= N [\![f \: vals(1) \ldots vals(n) \: d]\!] \\
