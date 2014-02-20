@@ -87,38 +87,93 @@ Składnia języka jest całkowicie zgodna z \cite[p.~3.1]{CC}, w związku z czym
 \cite[fig. 6]{CC}
 
 \subsection{Budowa grafu}
+Ten etap ewaluacji opisujemy w formacie semantyki denotacyjnej. Wierzchołki w grafie reprezentujemy następująco:
+\begin{gather}
+Vertex : N \times Expr \times \left\{ {LiftV \times Expr, FoldpV \times Expr, InputV}\right\} 
+\end{gather}
 
-\denote{bleh}
+Pierwszy element krotki to numer wierzchołka, drugi to jego wartość, zaś trzeci określa jego typ (wierzchołki typu LiftV i FoldpV dodatkowo przechowują funkcję przekazaną jako argument w wywołaniu odpowiednio \texttt{lift$_{n}$} i \texttt{foldp}). Pomijamy definicję funkcji value : Vertex $\rightarrow$ Expr, która dla danego wierzchołka zwraca jego wartość. Wymagamy by krawędzie pomiędzy dwoma wierzchołkami były numerowane (z uwagi na to, że kolejność argumentów sygnałowych jest istotna):
 
-\begin{prooftree}
-\AxiomC{A}
-\AxiomC{B}
-\AxiomC{C}
-\TrinaryInfC{D}
-\end{prooftree}
+\begin{gather}
+Edge : Vertex \times Vertex \times N
+\end{gather}
 
-\begin{prooftree}
-\AxiomC{A}
-\AxiomC{B}
-\AxiomC{C}
-\BinaryInfC{D}
-\BinaryInfC{E}
-\end{prooftree}
+Pomijamy reprezentację grafu, jednak żądamy by istniała funkcja Next : Graph $\rightarrow$ N, która dla danego grafu podaje kolejny dostępny numer wierzchołka. Poprzez N oznaczamy funkcję typu Expr $\rightarrow$ Expr, będącą funkcją semantyczną zadaną przez reguły ewaluacji funkcyjnej. Definiujemy również środowisko:
 
-\begin{prooftree}
-\AxiomC{$P$}
-\AxiomC{}
-\RightLabel{\scriptsize(1)}
-\UnaryInfC{$\neg P$}
-\BinaryInfC{$\bot$}
-\RightLabel{\scriptsize(1)}
-\UnaryInfC{$\neg\neg P$}
-\end{prooftree}
+\begin{gather}
+Env : Var \rightarrow Vertex  
+\end{gather}
+
+wraz z operacją update typu Var $\rightarrow$ Vertex $\rightarrow$ Env $\rightarrow$ Env. Definiujemy funkcję semantyczną D:
+
+\begin {gather}
+D : Expr \rightarrow Env \rightarrow Graph \rightarrow Vertex \times Graph \\  
+D\denote{x}\:env\:g = \langle env\:x,\:g \rangle \\
+D\denote{\texttt{lift$_{n}$} f s$_{1}$ ... s$_{n}$} = \langle v,\:g' \rangle \\
+\text{gdzie} \: \langle v_{1},\:g_{1} \rangle = D\denote{s$_{1}$}\:env\:g \\
+\langle v_{i},\:g_{i} \rangle = D\denote{s$_{i}$}\:env\:g_{i-1} \quad \text{dla}\:2 \leq i \leq n \\
+defaultV = N\denote{f (value v$_{1}$) ... (value v$_{n}$)} \\
+v = \langle Next(g_{n}),\:defaultV,\:\langle LiftV,\:f \rangle \rangle \\
+V(g') = V(g_{n}) \cup \left\{ {v}\right\} \\
+E(g') = E(g_{n}) \cup \{\langle v_{i},\:v,\:i \rangle : 1 \leq i \leq n\} \\
+D\denote{\texttt{foldp} f d s} = \langle v,\:g' \rangle \\
+\text{gdzie} \: \langle v_{s},\:g_{s} \rangle = D\denote{s}\:env\:g \\
+v = \langle Next(g_{s}),\:d,\:\langle Foldp,\:f \rangle \rangle \\
+V(g') = V(g_{s}) \cup \left\{ {v}\right\} \\
+E(g') = E(g_{s}) \cup \{\langle v_{s},\:v,\:1 \rangle \} \\
+D\denote{\texttt{let} l = s \texttt{in} r} = \langle v_{r},\:g_{r} \rangle \\
+\text{gdzie} \: \langle v_{s},\:g_{s} \rangle = D\denote{s}\:env\:g \\
+env' = update\:l\:v_{s}\:env \\
+\langle v_{r},\:g_{r} \rangle = D\denote{r}\:env'\:g_{s}
+\end{gather}
 
 \subsection{Inne podejście}
 
-semantyka operacyjna
+Powyższa semantyka wiernie bazuje na pracy \cite{CC} i klarownie oddziela od siebie ewaluację elementów funkcyjnych i sygnałowych. Wadą takiego podejścia jest nieoczekiwane zatrzymywanie się ewaluacji dla niektórych wyrażeń, jak np.:$\newline$ $\newline$
+\texttt{let y = (let x = Window.width in $\backslash$z -> x) $\newline$ in y ()} $\newline$ $\newline$
+Jednym z możliwych rozwiązań tej sytuacji jest połączenie obu etapów ewaluacji w jeden i budowanie grafu równolegle z ewaluacją elementów funkcyjnych. Nową relację redukcji oznaczamy w ten sam sposób, lecz teraz jest ona określona na zbiorze Expr $\times$ Graph. Do składni abstrakcyjnej dodajemy pomocnicze wyrażenia \texttt{signal} i (i $\in$ N) reprezentujące sygnały (wierzchołki w grafie). Dodajemy je również do kategorii wartości. Konteksty ewaluacyjne definiujemy niemal identycznie, jednak z definicji kontekstu usuwamy produkcję której prawą stroną jest \texttt{let} x = s \texttt{in} E (zatem nie ewaluujemy ciała konstrukcji \texttt{let}). Definiujemy regułę CONTEXT dla nowej relacji:
 
+\begin{prooftree}
+\AxiomC{$\langle$e, g$\rangle$ $\rightarrow$ $\langle$e$'$, g$'$$\rangle$}
+\RightLabel{\quad CONTEXT}
+\UnaryInfC{$\langle$E[e], g$\rangle$ $\rightarrow$ $\langle$E[e$'$], g$\rangle$}
+\end{prooftree}
+
+Do naszej semantyki włączamy reguły APPLICATION, OP, COND-TRUE, COND-FALSE i REDUCE (\cite[p.~3.3.1]{CC}) wraz z poniższą regułą umożliwiającą ich stosowanie:
+
+\begin{prooftree}
+\AxiomC{e $\rightarrow$ e$'$}
+\UnaryInfC{$\langle$e, g$\rangle$ $\rightarrow$ $\langle$e$'$, g$\rangle$}
+\end{prooftree}
+
+Kolejne dwie reguły budują fragment grafu odpowiadający rozpatrywanej konstrukcji sygnałowej oraz zastępują ją wyrażeniem \texttt{signal} i, gdzie i to numer wierzchołka odpowiadającego wynikowemu sygnałowi:
+
+\begin{prooftree}
+\AxiomC{}
+\RightLabel{\quad LIFT}
+\UnaryInfC{$\langle$\texttt{lift$_{n}$} val (\texttt{signal} i$_{1}$) ... (\texttt{signal} i$_{n}$), g$\rangle$ $\rightarrow$ $\langle$\texttt{signal} i, g$'$$\rangle$}
+\end{prooftree}
+
+\begin {gather}
+\text{gdzie} \: defaultV = N\denote{val (value v$_{i_{1}}$) ... (value v$_{i_{n}}$)} \\
+i = Next(g) \\
+v = \langle i,\:defaultV,\:\langle LiftV,\:val \rangle \rangle \\
+V(g') = V(g) \cup \left\{ {v}\right\} \\
+E(g') = E(g) \cup \{\langle v_{i_{j}},\:v,\:j \rangle : 1 \leq j \leq n\}
+\end{gather}
+
+\begin{prooftree}
+\AxiomC{}
+\RightLabel{\quad FOLDP}
+\UnaryInfC{$\langle$\texttt{foldp} val$_{1}$ val$_{2}$ (\texttt{signal} i), g$\rangle$ $\rightarrow$ $\langle$\texttt{signal} i$'$, g$'$$\rangle$}
+\end{prooftree}
+
+\begin {gather}
+\text{gdzie} \: v = \langle Next(g),\:val_{2},\:\langle FoldpV,\:val_{1} \rangle \rangle \\
+V(g') = V(g) \cup \left\{ {v}\right\} \\
+E(g') = E(g) \cup \{\langle v_{i},\:v,\:1 \rangle \}
+\end{gather}
+2
 \subsection{Propagacja zdarzeń w grafie}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
