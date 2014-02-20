@@ -206,8 +206,8 @@ Dla grafu $g$ i wierzchołka $v = \langle d, \langle FoldpV,f \rangle \rangle$:
 \item jeśli $ \langle v_s , v, 1, Change\:val \rangle \in E(g) $, to w wynikowym grafie $g'$ mamy
 \begin {align*}
 V(g') &= V(g) \setminus \{ v \} \cup \{ nV \} \\
-E(g') &= \begin{aligned} E(g) &\setminus \{ \langle v, \_, _, \_ \rangle : \langle v, \_ , _, \_ \rangle \in E(g) \} \\ 
-&\cup \{ \langle v, v_t, k, Change\: nVal \rangle : \langle v, v_t , k, \_ \rangle \in E(g) \} \end{aligned} \\
+E(g') &= \begin{aligned} E(g) &\setminus \{ \langle v, \_, \_, \_ \rangle : \langle v, \_ , \_, \_ \rangle \in E(g) \} \\ 
+&\cup \{ \langle nV, v_t, k, Change\: nVal \rangle : \langle v, v_t , k, \_ \rangle \in E(g) \} \end{aligned} \\
 \text{gdzie} \: nVal &= N [\![f \: val \: d]\!] \\
 nV &= \langle nVal , \langle FoldpV,f \rangle \rangle
 \end{align*}
@@ -223,8 +223,8 @@ Dla grafu $g$ i wierzchołka $v = \langle d, \langle LiftV_n,f \rangle \rangle$:
 \item jeśli $ \exists i . \langle v_s , v, i, Change \: \_ \rangle \in E(g) $, to w wynikowym grafie $g'$ mamy
 \begin {align*}
 V(g') &= V(g) \setminus \{ v \} \cup \{ nV \} \\
-E(g') &= \begin{aligned} E(g) &\setminus \{ \langle v, \_, _, \_ \rangle : \langle v, \_ , _, \_ \rangle \in E(g) \} \\ 
-&\cup \{ \langle v, v_t, k, Change\: nVal \rangle : \langle v, v_t , k, \_ \rangle \in E(g) \} \end{aligned} \\
+E(g') &= \begin{aligned} E(g) &\setminus \{ \langle v, \_, \_, \_ \rangle : \langle v, \_, \_, \_ \rangle \in E(g) \} \\ 
+&\cup \{ \langle nV, v_t, k, Change\: nVal \rangle : \langle v, v_t , k, \_ \rangle \in E(g) \} \end{aligned} \\
 \text{gdzie} \:
 nV &= \langle nVal , \langle Lift_n,f \rangle \rangle \\
 nVal &= N [\![f \: vals(1) \ldots vals(n) \: d]\!] \\
