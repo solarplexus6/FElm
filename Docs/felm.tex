@@ -81,10 +81,14 @@ Składnia języka jest całkowicie zgodna z \cite[p.~3.1]{CC}, w związku z czym
 \section{Semantyka}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+Zgodnie z \cite[p.~3.3]{CC} w bazowej wersji systemu proces interpretacji programu jest podzielony na dwa etapy. Wpierw wykonywana jest redukcja wszystkich konstrukcji funkcyjnych do termu w języku pośrednim. W tej postaci  pozostają już tylko konstrukcje sygnałów i korzystamy z niej w procesie rozwiązywania zależności pomiędzy konstrukcjami sygnałowymi. Wzorując się na intuicjach zawartych w \cite[p.~3.3.2]{CC} explicite tworzymy graf sygnału w trakcie etapu drugiego, z którego to grafu ostatecznie korzystamy podczas przetwarzania nadchodzących zdarzeń.
+
+
+Sygnały definiujemy jako strumienie dyskretnych wartości, oraz przetwarzamy je synchronicznie, tj. kiedy w sygnale wejściowym pojawi się nowa wartość musimy rozpropagować ją w całym grafie zanim będziemy mogli obsłużyć nowe zdarzenie. Przyjmujemy, że zbiór sygnałów wejściowych jest stały i zdefiniowany z góry. Podobnie jak w \nocite{CC} (mimo, że nie jest to dosłownie wyszczególnione), czas również traktujemy jak zwykły sygnał, tj. abstrahujemy od pojęcia czasu podczas definiowania semantyki.
+
 \subsection{Ewaluacja funkcyjna}
 
-\cite[p.~3.3.1]{CC}
-\cite[fig. 6]{CC}
+W podstawowej wersji systemu podczas pierwszego etapu interpretacji korzystamy bezpośrednio z semantyki operacyjnej opisanej w \cite[p.~3.3.1]{CC}, z regułami zdefiniowanymi w \cite[fig.~6]{CC}. 
 
 \subsection{Budowa grafu}
 Ten etap ewaluacji opisujemy w formacie semantyki denotacyjnej. Wierzchołki w grafie reprezentujemy następująco:
@@ -175,6 +179,24 @@ E(g') = E(g) \cup \{\langle v_{i},\:v,\:1 \rangle \}
 \end{gather}
 2
 \subsection{Propagacja zdarzeń w grafie}
+
+Aby reprezentować pojawienie się nowej wartości w sygnale lub jej brak dodajemy do krawędzi grafu dodatkową informację typu:
+$$ type \: Event \: \alpha = NoChange \: \alpha \: | \: Change \: \alpha $$
+Pojawienie się nowej wartości w wierzchołku będziemy propagować przez ustawienie na wychodzących z niego krawędziach etykiety $Change\:v$ (gdzie $v$ oznacza nową wartość znajdującą się w wierzchołku), natomiast gdy nic nowego nie pojawi się w wierzchołku oznaczymy jego krawędzie etykietami $NoChange\:v$ (w tym przypadku $v$ to ostatnia wartość jaka pojawiła się w danym sygnale). W ten sposób unikniemy ponownego obliczania wartości w wierzchołkach, kiedy nie jest to konieczne.
+
+Kiedy posiadamy już poprawnie zbudowany graf propagację nowych wartości pojawiających się w sygnałach wejściowych przeprowadzamy przez:
+\begin{enumerate}
+\item oznaczenie krawędzi wychodzących wierzchołka danego sygnału wejściowego etykietą $Change\:v$
+\item oznaczenie krawędzi wychodzących reszty wierzchołków sygnałów wejściowych etykietą $NoChange\:v$ 
+\item odpowiednie przetworzenie każdego wierzchołka (nie reprezentującego sygnału wejściowego) według porządku topologicznego grafu zgodnie z regułami przedstawionymi poniżej:
+\end{enumerate}
+
+\begin{prooftree}
+\AxiomC{$ \langle v_s, v, Change\:val \rangle \in E(g) $}
+%%\RightLabel{\scriptsize(foldpChange)}
+\UnaryInfC{$ \langle v = \langle d, \langle FoldpV,f \rangle \rangle, g \rangle \Rightarrow g[v/\langle nV, \langle FoldpV,f \rangle \rangle][\langle v, *,\_ \rangle/\langle v, *,Change\:nV \rangle] $}
+\end{prooftree}
+gdzie $nV = N [\![f\:val\:d]\!]$
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Uwagi dot. implementacji}
